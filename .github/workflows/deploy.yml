@@ -38,13 +38,6 @@ jobs:
           push_env "DATABASE_URL" "${{ secrets.DATABASE_URL }}"
           push_env "JWT_SECRET"   "${{ secrets.JWT_SECRET }}"
 
-      - name: Pull Vercel project settings (backend)
-        working-directory: server
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
-
       - name: Deploy server to Vercel
         working-directory: server
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
