@@ -11,6 +11,10 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
+// Trust Vercel / load-balancer proxy so req.ip returns the real client IP
+// (needed for rate limiting — without this all requests share the same internal IP)
+app.set('trust proxy', 1);
+
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 const CORS_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .split(',')
