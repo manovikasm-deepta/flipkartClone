@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { productService } from '@/services/api';
@@ -9,8 +9,56 @@ import CTAButtons from './components/CTAButtons';
 import SpecsTable from './components/SpecsTable';
 import RatingStars from '@/components/common/RatingStars';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
+import ProductCard from '@/components/common/ProductCard';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import styles from './ProductDetail.module.css';
+
+const RECENT_KEY = 'fk_recently_viewed';
+const MAX_RECENT = 8;
+
+function saveRecentlyViewed(id) {
+  try {
+    const existing = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    const filtered = existing.filter((x) => x !== id);
+    const updated  = [id, ...filtered].slice(0, MAX_RECENT);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+  } catch (e) { /* ignore storage errors */ }
+}
+
+function getRecentlyViewed() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch (e) { return []; }
+}
+
+function HorizontalProductRow({ title, products }) {
+  const scrollRef = useRef(null);
+  if (!products.length) return null;
+  const CARD = 190;
+  return (
+    <div style={{ background: '#fff', borderRadius: 4, boxShadow: '0 1px 2px rgba(0,0,0,0.1)', overflow: 'hidden', marginTop: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid #f0f0f0' }}>
+        <h2 style={{ fontWeight: 700, fontSize: 20, color: '#212121', margin: 0 }}>{title}</h2>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button onClick={() => scrollRef.current?.scrollBy({ left: -CARD * 3, behavior: 'smooth' })}
+            style={{ width: 30, height: 30, border: '1px solid #e0e0e0', borderRadius: '50%', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ChevronLeft size={15} />
+          </button>
+          <button onClick={() => scrollRef.current?.scrollBy({ left: CARD * 3, behavior: 'smooth' })}
+            style={{ width: 30, height: 30, border: '1px solid #e0e0e0', borderRadius: '50%', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ChevronRight size={15} />
+          </button>
+        </div>
+      </div>
+      <div ref={scrollRef} style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none', gap: 1, background: '#f0f0f0' }}>
+        {products.map((p) => (
+          <div key={p.id} style={{ width: CARD, flexShrink: 0, background: '#fff' }}>
+            <ProductCard product={p} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function inr(n) {
   return Number(n).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
@@ -23,15 +71,36 @@ export default function ProductDetailPage() {
   const { isLoggedIn } = useAuth();
   const productIds    = useSelector((s) => s.wishlist.productIds);
 
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [tab, setTab]         = useState('description');
-  const [qty, setQty]         = useState(1);
+  const [product, setProduct]         = useState(null);
+  const [loading, setLoading]         = useState(true);
+  const [tab, setTab]                 = useState('description');
+  const [qty, setQty]                 = useState(1);
+  const [similar, setSimilar]         = useState([]);
+  const [recentProds, setRecentProds] = useState([]);
 
   useEffect(() => {
     setLoading(true);
+    setTab('description');
     productService.getById(productId)
-      .then((r) => setProduct(r.data))
+      .then((r) => {
+        const p = r.data;
+        setProduct(p);
+        saveRecentlyViewed(productId);
+
+        // load similar products (same category, exclude self)
+        if (p?.category?.slug) {
+          productService.list({ category: p.category.slug, limit: 12, sort: 'rating_desc' })
+            .then((res) => setSimilar((res.data?.items || []).filter((x) => x.id !== productId)))
+            .catch(() => {});
+        }
+
+        // load recently viewed (from localStorage, excluding current)
+        const recentIds = getRecentlyViewed().filter((id) => id !== productId);
+        if (recentIds.length) {
+          Promise.all(recentIds.slice(0, 6).map((id) => productService.getById(id).then((r2) => r2.data).catch(() => null)))
+            .then((items) => setRecentProds(items.filter(Boolean)));
+        }
+      })
       .catch(() => { toast.error('Product not found'); navigate('/products'); })
       .finally(() => setLoading(false));
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -59,7 +128,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.container}>
+      <div className={styles.container} style={{ paddingBottom: 8 }}>
         {/* Breadcrumb */}
         <nav className={styles.breadcrumb} aria-label="breadcrumb">
           <Link to="/">Home</Link>
@@ -172,6 +241,20 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Similar Products */}
+      {similar.length > 0 && (
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 16px' }}>
+          <HorizontalProductRow title="Similar Products" products={similar} />
+        </div>
+      )}
+
+      {/* Recently Viewed */}
+      {recentProds.length > 0 && (
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 16px 24px' }}>
+          <HorizontalProductRow title="Recently Viewed" products={recentProds} />
+        </div>
+      )}
     </div>
   );
 }

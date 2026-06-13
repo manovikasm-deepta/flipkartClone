@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { productService } from '@/services/api';
 import HeroBanner from './components/HeroBanner';
 import DealSection from './components/DealSection';
 import HorizontalScrollSection from './components/HorizontalScrollSection';
+import CategoryHomePage from './components/CategoryHomePage';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
 import styles from './Home.module.css';
 
-const SECTION_COLORS = ['#2096ff', '#fcd646', '#2096ff'];
+const SECTION_COLORS = ['#2874f0', '#e65100', '#2e7d32'];
 
-export default function HomePage() {
+function DefaultHome() {
   const [sections, setSections] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(null);
@@ -31,7 +33,6 @@ export default function HomePage() {
       </div>
 
       <div className={styles.content}>
-
         {loading && (
           <div className={styles.skeletonGrid}>
             <SkeletonLoader variant="card" count={8} />
@@ -44,13 +45,8 @@ export default function HomePage() {
             <button
               onClick={load}
               style={{
-                background: 'var(--fk-blue)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 4,
-                padding: '8px 20px',
-                fontWeight: 600,
-                cursor: 'pointer',
+                background: 'var(--fk-blue)', color: '#fff', border: 'none',
+                borderRadius: 4, padding: '8px 20px', fontWeight: 600, cursor: 'pointer',
               }}
             >
               Retry
@@ -78,4 +74,13 @@ export default function HomePage() {
       </div>
     </div>
   );
+}
+
+export default function HomePage() {
+  const [searchParams] = useSearchParams();
+  const activeCategory = searchParams.get('category') || null;
+
+  return activeCategory
+    ? <CategoryHomePage category={activeCategory} />
+    : <DefaultHome />;
 }

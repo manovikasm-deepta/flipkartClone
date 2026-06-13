@@ -146,8 +146,13 @@ export default function CategoryNav() {
 
   function handleClick(slug) {
     setHoveredIdx(null);
-    if (!slug) navigate('/');
-    else navigate(`/products?category=${slug}`);
+    if (!slug) {
+      navigate('/');
+    } else if (isHome) {
+      navigate(`/?category=${slug}`);
+    } else {
+      navigate(`/products?category=${slug}`);
+    }
   }
 
   function handleMouseEnter(idx) {
@@ -211,7 +216,8 @@ export default function CategoryNav() {
                   className={styles.megaItem}
                   onClick={() => {
                     setHoveredIdx(null);
-                    navigate(`/products?category=${sub.slug}`);
+                    if (isHome) navigate(`/?category=${sub.slug}`);
+                    else navigate(`/products?category=${sub.slug}`);
                   }}
                 >
                   {sub.label}
