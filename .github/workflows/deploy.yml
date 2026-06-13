@@ -9,15 +9,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # ── Deploy full monorepo (frontend + backend) to one Vercel project ──────────
   deploy:
     name: Deploy → Vercel
     runs-on: ubuntu-latest
     environment: production
-
-    env:
-      VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
 
     steps:
       - uses: actions/checkout@v4
@@ -29,21 +24,53 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      - name: Install dependencies (client + server)
+      # Resolve org ID from token (avoids needing VERCEL_ORG_ID as a secret)
+      - name: Resolve Vercel org ID
+        id: org
         run: |
-          cd client && npm ci
-          cd ../server && npm ci
+          ORG_ID=$(curl -s https://api.vercel.com/v2/user \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['user']['id'])")
+          echo "id=$ORG_ID" >> $GITHUB_OUTPUT
+
+      # Push Gmail + runtime env vars into the Vercel project so they're
+      # available to the serverless function at runtime
+      - name: Set Vercel environment variables
+        run: |
+          PROJECT="prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv"
+          TOKEN="${{ secrets.VERCEL_TOKEN }}"
+
+          set_env() {
+            curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT/env?upsert=true" \
+              -H "Authorization: Bearer $TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"key\":\"$1\",\"value\":\"$2\",\"type\":\"encrypted\",\"target\":[\"production\"]}" > /dev/null
+          }
+
+          set_env "NODE_ENV"    "production"
+          set_env "GMAIL_USER"  "mukkerlamanovikas@gmail.com"
+          set_env "GMAIL_PASS"  "xhihqvmjbxcdwcga"
+          set_env "DATABASE_URL" "${{ secrets.DATABASE_URL }}"
+          set_env "JWT_SECRET"   "${{ secrets.JWT_SECRET }}"
 
       - name: Pull Vercel project settings
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
+          VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
 
       - name: Build
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
+          VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
 
       - name: Deploy to production
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
+          VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
 
-  # ── Fix demo user password + run migrations against production DB ─────────────
   seed-db:
     name: Seed Production DB
     runs-on: ubuntu-latest
@@ -69,7 +96,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npm run migrate
 
-      - name: Run seed (updates demo user password)
+      - name: Run seed
         working-directory: server
         env:
           NODE_ENV:     production

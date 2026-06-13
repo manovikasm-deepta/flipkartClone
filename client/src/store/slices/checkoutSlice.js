@@ -22,11 +22,11 @@ const checkoutSlice = createSlice({
     },
     setBuyNowItem(state, { payload }) {
       state.buyNowItem = payload;
-      try { sessionStorage.setItem('fk_buy_now', JSON.stringify(payload)); } catch {}
+      try { sessionStorage.setItem('fk_buy_now', JSON.stringify(payload)); } catch (_e) { /* sessionStorage unavailable */ }
     },
     clearBuyNow(state) {
       state.buyNowItem = null;
-      try { sessionStorage.removeItem('fk_buy_now'); } catch {}
+      try { sessionStorage.removeItem('fk_buy_now'); } catch (_e) { /* sessionStorage unavailable */ }
     },
     setPaymentMethod(state, { payload }) {
       state.paymentMethod = payload;
@@ -40,7 +40,7 @@ const checkoutSlice = createSlice({
       state.buyNowItem        = null;
       state.paymentMethod     = 'COD';
       state.confirmationEmail = '';
-      try { sessionStorage.removeItem('fk_buy_now'); } catch {}
+      try { sessionStorage.removeItem('fk_buy_now'); } catch (_e) { /* sessionStorage unavailable */ }
     },
   },
 });

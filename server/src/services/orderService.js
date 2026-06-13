@@ -243,7 +243,7 @@ async function placeOrder(userPublicId, addressPublicId, paymentMethod, buyNowIt
           : rows[0].email;
         if (toEmail) await sendOrderConfirmation(toEmail, serialized, rows[0].name);
       }
-    } catch {}
+    } catch (_e) { /* email failure must not affect order response */ }
 
     return serialized;
   } catch (err) {
