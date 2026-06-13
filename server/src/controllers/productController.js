@@ -3,7 +3,7 @@ const { success, list } = require('../utils/formatResponse');
 const productService   = require('../services/productService');
 
 const getProducts = asyncHandler(async (req, res) => {
-  const { search, category, sort, page, limit, inStock, minPrice, maxPrice, rating } = req.query;
+  const { search, category, sort, page, limit, inStock, minPrice, maxPrice, rating, brand } = req.query;
 
   const result = await productService.listProducts({
     search,
@@ -15,6 +15,7 @@ const getProducts = asyncHandler(async (req, res) => {
     minPrice,
     maxPrice,
     rating,
+    brand,
   });
 
   list(res, result.items, result.pagination);

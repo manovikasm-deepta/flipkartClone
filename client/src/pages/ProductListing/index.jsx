@@ -22,6 +22,7 @@ export default function ProductListingPage() {
   const minPrice = searchParams.get('minPrice') || '';
   const maxPrice = searchParams.get('maxPrice') || '';
   const rating   = searchParams.get('rating')   || '';
+  const brand    = searchParams.get('brand')    || '';
 
   const load = useCallback(() => {
     setLoading(true);
@@ -31,6 +32,7 @@ export default function ProductListingPage() {
     if (minPrice) params.minPrice = minPrice;
     if (maxPrice) params.maxPrice = maxPrice;
     if (rating)   params.rating   = rating;
+    if (brand)    params.brand    = brand;
 
     productService.list(params)
       .then((r) => {
@@ -42,7 +44,7 @@ export default function ProductListingPage() {
         setPagination({});
       })
       .finally(() => setLoading(false));
-  }, [category, search, sort, page, minPrice, maxPrice, rating]);
+  }, [category, search, sort, page, minPrice, maxPrice, rating, brand]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -74,11 +76,18 @@ export default function ProductListingPage() {
     setSearchParams(next);
   }
 
+  function handleBrandChange(b) {
+    setParam('brand', b);
+  }
+
   function handleClear() {
     const next = new URLSearchParams();
     if (search) next.set('search', search);
     setSearchParams(next);
   }
+
+  // extract unique non-null brands from current product list
+  const availableBrands = [...new Set(products.map((p) => p.brand).filter(Boolean))].sort();
 
   return (
     <div className={styles.page}>
@@ -98,10 +107,13 @@ export default function ProductListingPage() {
           <FilterSidebar
             activeCategory={category}
             activeRating={rating}
+            activeBrand={brand}
             minPrice={minPrice}
             maxPrice={maxPrice}
+            brands={availableBrands}
             onCategoryChange={handleCategoryChange}
             onRatingChange={handleRatingChange}
+            onBrandChange={handleBrandChange}
             onPriceChange={handlePriceChange}
             onClear={handleClear}
           />

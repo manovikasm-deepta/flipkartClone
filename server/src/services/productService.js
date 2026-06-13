@@ -88,6 +88,7 @@ async function listProducts({
   minPrice,
   maxPrice,
   rating,
+  brand,
 } = {}) {
   const pageNum  = Math.max(1, parseInt(page)  || 1);
   const pageSize = Math.min(40, Math.max(1, parseInt(limit) || 20));
@@ -153,6 +154,13 @@ async function listProducts({
       params.push(minRating);
       idx++;
     }
+  }
+
+  // ── brand filter ──────────────────────────────────────────────────────────
+  if (brand && brand.trim()) {
+    conditions.push(`LOWER(p.brand) = LOWER($${idx})`);
+    params.push(brand.trim());
+    idx++;
   }
 
   const WHERE = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';

@@ -12,10 +12,13 @@ const RATINGS = [
 export default function FilterSidebar({
   activeCategory,
   activeRating,
+  activeBrand,
   minPrice,
   maxPrice,
+  brands = [],
   onCategoryChange,
   onRatingChange,
+  onBrandChange,
   onPriceChange,
   onClear,
 }) {
@@ -37,13 +40,14 @@ export default function FilterSidebar({
     onPriceChange(localMin, localMax);
   }
 
-  const hasFilters = activeCategory || activeRating || minPrice || maxPrice;
+  const hasFilters = activeCategory || activeRating || activeBrand || minPrice || maxPrice;
+  const activeCategoryName = categories.find((c) => c.slug === activeCategory)?.name || activeCategory;
 
   return (
     <aside className={styles.sidebar}>
       <div className={styles.filterCard}>
 
-        {/* ── Header ────────────────────────────── */}
+        {/* Header */}
         <div className={styles.filterHeader}>
           <span className={styles.filterHeaderTitle}>Filters</span>
           {hasFilters && (
@@ -51,25 +55,75 @@ export default function FilterSidebar({
           )}
         </div>
 
-        {/* ── Categories ────────────────────────── */}
-        <div className={styles.filterSection}>
-          <p className={styles.filterSectionTitle}>Categories</p>
-          {categories.map((cat) => (
-            <label key={cat.id} className={styles.checkRow}>
-              <input
-                type="checkbox"
-                className={styles.checkbox}
-                checked={activeCategory === cat.slug}
-                onChange={() => onCategoryChange(activeCategory === cat.slug ? '' : cat.slug)}
-              />
-              <span className={`${styles.checkLabel} ${activeCategory === cat.slug ? styles.checkLabelActive : ''}`}>
-                {cat.name}
-              </span>
-            </label>
-          ))}
-        </div>
+        {/* ── When a category IS selected: show category label + brand filter ── */}
+        {activeCategory ? (
+          <>
+            {/* Active category chip */}
+            <div className={styles.filterSection}>
+              <p className={styles.filterSectionTitle}>Category</p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0' }}>
+                <span style={{ fontSize: 13, color: '#2874f0', fontWeight: 600 }}>
+                  {activeCategoryName}
+                </span>
+                <button
+                  onClick={() => onCategoryChange('')}
+                  style={{ fontSize: 11, color: '#878787', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                >
+                  ✕ Change
+                </button>
+              </div>
+            </div>
 
-        {/* ── Customer Ratings ──────────────────── */}
+            {/* Brand filter — only when brands are available */}
+            {brands.length > 0 && (
+              <div className={styles.filterSection}>
+                <p className={styles.filterSectionTitle}>Brand</p>
+                {activeBrand && (
+                  <button
+                    className={styles.clearBtn}
+                    style={{ marginBottom: 6, display: 'block' }}
+                    onClick={() => onBrandChange('')}
+                  >
+                    Clear brand
+                  </button>
+                )}
+                {brands.map((b) => (
+                  <label key={b} className={styles.checkRow}>
+                    <input
+                      type="checkbox"
+                      className={styles.checkbox}
+                      checked={activeBrand === b}
+                      onChange={() => onBrandChange(activeBrand === b ? '' : b)}
+                    />
+                    <span className={`${styles.checkLabel} ${activeBrand === b ? styles.checkLabelActive : ''}`}>
+                      {b}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          /* ── When NO category selected: show all categories ── */
+          <div className={styles.filterSection}>
+            <p className={styles.filterSectionTitle}>Categories</p>
+            {categories.map((cat) => (
+              <label key={cat.id} className={styles.checkRow}>
+                <input
+                  type="checkbox"
+                  className={styles.checkbox}
+                  checked={activeCategory === cat.slug}
+                  onChange={() => onCategoryChange(activeCategory === cat.slug ? '' : cat.slug)}
+                />
+                <span className={`${styles.checkLabel} ${activeCategory === cat.slug ? styles.checkLabelActive : ''}`}>
+                  {cat.name}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
+
+        {/* Customer Ratings */}
         <div className={styles.filterSection}>
           <p className={styles.filterSectionTitle}>Customer Ratings</p>
           {RATINGS.map(({ label, value }) => (
@@ -88,7 +142,7 @@ export default function FilterSidebar({
           ))}
         </div>
 
-        {/* ── Price ─────────────────────────────── */}
+        {/* Price */}
         <div className={styles.filterSection}>
           <p className={styles.filterSectionTitle}>Price</p>
           <form onSubmit={handlePriceGo}>
