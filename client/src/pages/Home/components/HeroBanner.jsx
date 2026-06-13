@@ -75,7 +75,7 @@ const SLIDES = [
 
 export default function HeroBanner() {
   return (
-    <div style={{ borderRadius: 4, overflow: 'hidden', boxShadow: 'var(--fk-shadow-sm)' }}>
+    <div style={{ overflow: 'hidden', boxShadow: 'var(--fk-shadow-sm)' }}>
       <style>{`
         .hero-swiper .swiper-pagination-bullet { background: rgba(255,255,255,0.5); opacity: 1; width: 8px; height: 8px; }
         .hero-swiper .swiper-pagination-bullet-active { background: #fff; width: 20px; border-radius: 4px; }
@@ -100,100 +100,112 @@ export default function HeroBanner() {
               height: 220,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0 48px 0 52px',
+              justifyContent: 'center',
               position: 'relative',
               overflow: 'hidden',
             }}>
-              {/* bg glow behind image */}
+              {/* full-width bg glow on the right */}
               <div style={{
                 position: 'absolute', right: 0, top: 0, bottom: 0,
                 width: '55%',
                 background: slide.imgBg,
                 pointerEvents: 'none',
+                zIndex: 1,
               }} />
 
-              {/* Left — text */}
-              <div style={{ position: 'relative', zIndex: 2, flex: '0 0 auto', maxWidth: 340 }}>
-                <span style={{
-                  display: 'inline-block',
-                  background: 'rgba(255,255,255,0.15)',
-                  color: slide.tagColor,
-                  fontSize: 11,
-                  fontWeight: 800,
-                  padding: '2px 10px',
-                  borderRadius: 2,
-                  letterSpacing: 1.2,
-                  marginBottom: 10,
-                }}>
-                  {slide.tag}
-                </span>
-
-                <h2 style={{
-                  color: '#fff',
-                  fontSize: 'clamp(18px, 2.2vw, 28px)',
-                  fontWeight: 800,
-                  margin: '0 0 4px',
-                  lineHeight: 1.2,
-                }}>
-                  {slide.title}
-                </h2>
-
-                <p style={{
-                  color: slide.tagColor,
-                  fontSize: 'clamp(14px, 1.6vw, 20px)',
-                  fontWeight: 700,
-                  margin: '0 0 4px',
-                }}>
-                  {slide.subtitle}
-                </p>
-
-                <p style={{
-                  color: 'rgba(255,255,255,0.75)',
-                  fontSize: 13,
-                  margin: '0 0 16px',
-                }}>
-                  {slide.extra}
-                </p>
-
-                <Link
-                  to={slide.href}
-                  style={{
-                    display: 'inline-block',
-                    background: '#fff',
-                    color: '#212121',
-                    fontWeight: 700,
-                    fontSize: 13,
-                    padding: '8px 22px',
-                    borderRadius: 2,
-                    textDecoration: 'none',
-                    letterSpacing: 0.3,
-                  }}
-                >
-                  {slide.cta}
-                </Link>
-              </div>
-
-              {/* Right — product image */}
+              {/* inner: constrained width, flex row */}
               <div style={{
-                position: 'relative', zIndex: 2,
-                flex: '0 0 auto',
-                width: 'clamp(160px, 28vw, 260px)',
-                height: '100%',
+                width: '100%',
+                maxWidth: 1280,
+                padding: '0 52px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'space-between',
+                position: 'relative',
+                zIndex: 2,
+                height: '100%',
               }}>
-                <img
-                  src={slide.img}
-                  alt={slide.title}
-                  style={{
-                    height: '85%',
-                    width: '100%',
-                    objectFit: 'contain',
-                    filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.4))',
-                  }}
-                />
+                {/* Left — text */}
+                <div style={{ flex: '0 0 auto', maxWidth: 340 }}>
+                  <span style={{
+                    display: 'inline-block',
+                    background: 'rgba(255,255,255,0.15)',
+                    color: slide.tagColor,
+                    fontSize: 11,
+                    fontWeight: 800,
+                    padding: '2px 10px',
+                    borderRadius: 2,
+                    letterSpacing: 1.2,
+                    marginBottom: 10,
+                  }}>
+                    {slide.tag}
+                  </span>
+
+                  <h2 style={{
+                    color: '#fff',
+                    fontSize: 'clamp(18px, 2.2vw, 28px)',
+                    fontWeight: 800,
+                    margin: '0 0 4px',
+                    lineHeight: 1.2,
+                  }}>
+                    {slide.title}
+                  </h2>
+
+                  <p style={{
+                    color: slide.tagColor,
+                    fontSize: 'clamp(14px, 1.6vw, 20px)',
+                    fontWeight: 700,
+                    margin: '0 0 4px',
+                  }}>
+                    {slide.subtitle}
+                  </p>
+
+                  <p style={{
+                    color: 'rgba(255,255,255,0.75)',
+                    fontSize: 13,
+                    margin: '0 0 16px',
+                  }}>
+                    {slide.extra}
+                  </p>
+
+                  <Link
+                    to={slide.href}
+                    style={{
+                      display: 'inline-block',
+                      background: '#fff',
+                      color: '#212121',
+                      fontWeight: 700,
+                      fontSize: 13,
+                      padding: '8px 22px',
+                      borderRadius: 2,
+                      textDecoration: 'none',
+                      letterSpacing: 0.3,
+                    }}
+                  >
+                    {slide.cta}
+                  </Link>
+                </div>
+
+                {/* Right — product image */}
+                <div style={{
+                  flex: '0 0 auto',
+                  width: 'clamp(160px, 28vw, 260px)',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <img
+                    src={slide.img}
+                    alt={slide.title}
+                    style={{
+                      height: '85%',
+                      width: '100%',
+                      objectFit: 'contain',
+                      filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.4))',
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </SwiperSlide>

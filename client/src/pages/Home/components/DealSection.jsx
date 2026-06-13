@@ -20,13 +20,13 @@ export default function DealSection({ title, color = '#2096ff', products = [], s
       {/* Header */}
       <div style={{
         background: color,
-        padding: '14px 20px 0',
+        padding: '12px 16px',
         display: 'flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        minHeight: 62,
+        minHeight: 54,
       }}>
-        <h2 style={{ color: textColor, fontWeight: 800, fontSize: 22, margin: 0, paddingBottom: 14 }}>
+        <h2 style={{ color: textColor, fontWeight: 700, fontSize: 20, margin: 0 }}>
           {title}
         </h2>
         <Link
@@ -34,10 +34,11 @@ export default function DealSection({ title, color = '#2096ff', products = [], s
           style={{
             color: textColor,
             fontSize: 13,
-            fontWeight: 700,
+            fontWeight: 600,
             textDecoration: 'none',
-            padding: '6px 18px 12px',
-            opacity: 0.9,
+            padding: '6px 14px',
+            background: 'rgba(255,255,255,0.18)',
+            borderRadius: 2,
             display: 'flex',
             alignItems: 'center',
             gap: 4,

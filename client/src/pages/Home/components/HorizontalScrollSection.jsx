@@ -29,10 +29,10 @@ export default function HorizontalScrollSection({ title = 'You May Also Like', p
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '16px 20px 12px',
+        padding: '12px 16px',
         borderBottom: '1px solid var(--fk-border-light)',
       }}>
-        <h2 style={{ fontWeight: 800, fontSize: 20, color: 'var(--fk-text-primary)', margin: 0 }}>
+        <h2 style={{ fontWeight: 700, fontSize: 20, color: 'var(--fk-text-primary)', margin: 0 }}>
           {title}
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

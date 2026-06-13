@@ -9,7 +9,10 @@
 /* ── Main bar ────────────────────────────────────────────────── */
 .mainBar {
   background: var(--fk-header-bg);
-  padding: 10px 0;
+  padding: 8px 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
 }
 
 .container {
@@ -174,49 +177,21 @@
 }
 .dropdownLogout { color: #c62828; }
 
-/* ── Category bar ────────────────────────────────────────────── */
-.catBar {
-  background: #fff;
-  border-top: 1px solid var(--fk-border-light);
-}
-.catList {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 16px;
-  display: flex;
-  align-items: stretch;
-  overflow-x: auto;
-  scrollbar-width: none;
-  list-style: none;
-}
-.catList::-webkit-scrollbar { display: none; }
-
-.catItem {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 16px;
-  cursor: pointer;
-  text-decoration: none;
-  border-bottom: 3px solid transparent;
-  transition: border-color 0.15s;
-  gap: 3px;
-  color: var(--fk-text-primary);
-  min-width: 72px;
-}
-.catItem:hover { border-bottom-color: var(--fk-blue); }
-.catItemActive  { border-bottom-color: var(--fk-blue); }
-
-.catIcon { font-size: 18px; }
-.catLabel {
+/* ── Drop badge (wishlist count in dropdown) ─────────────────── */
+.dropBadge {
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  background: var(--fk-cart-badge);
+  color: #fff;
   font-size: 11px;
-  font-weight: 500;
-  color: var(--fk-text-muted);
-  text-align: center;
-  white-space: nowrap;
+  font-weight: 700;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
 }
-.catItemActive .catLabel { color: var(--fk-blue); font-weight: 600; }
 
 /* ── Mobile ──────────────────────────────────────────────────── */
 @media (max-width: 768px) {

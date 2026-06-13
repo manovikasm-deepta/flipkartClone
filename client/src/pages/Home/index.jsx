@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { productService } from '@/services/api';
 import HeroBanner from './components/HeroBanner';
-import CategoryTiles from './components/CategoryTiles';
 import DealSection from './components/DealSection';
 import HorizontalScrollSection from './components/HorizontalScrollSection';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
@@ -32,7 +31,6 @@ export default function HomePage() {
       </div>
 
       <div className={styles.content}>
-        <CategoryTiles />
 
         {loading && (
           <div className={styles.skeletonGrid}>

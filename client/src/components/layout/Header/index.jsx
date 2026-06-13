@@ -1,49 +1,32 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '@/hooks/useAuth';
 import { logout } from '@/store/slices/authSlice';
 import { clearCartState } from '@/store/slices/cartSlice';
 import { setWishlistIds } from '@/store/slices/wishlistSlice';
 import {
-  Search, ShoppingCart, User, ChevronDown, Heart,
-  Package, MapPin, LogOut, UserCircle,
+  Search, ShoppingCart, User, ChevronDown,
+  Package, MapPin, LogOut, UserCircle, Heart, MoreHorizontal,
 } from 'lucide-react';
 import styles from './Header.module.css';
 
-const CATEGORIES = [
-  { label: 'For You',         slug: '',              icon: '⭐' },
-  { label: 'Mobiles',         slug: 'mobiles',       icon: '📱' },
-  { label: 'Fashion',         slug: 'fashion',       icon: '👗' },
-  { label: 'Electronics',     slug: 'electronics',   icon: '💻' },
-  { label: 'Beauty',          slug: 'beauty',        icon: '💄' },
-  { label: 'Home',            slug: 'home',          icon: '🏠' },
-  { label: 'Appliances',      slug: 'appliances',    icon: '🧲' },
-  { label: 'Toys',            slug: 'toys',          icon: '🎮' },
-  { label: 'Sports',          slug: 'sports-fitness',icon: '🏃' },
-  { label: 'Books',           slug: 'books-media',   icon: '📚' },
-  { label: 'Furniture',       slug: 'furniture',     icon: '🛋️' },
-  { label: 'Auto Acc.',       slug: 'auto-accessories',icon: '🚗' },
-  { label: 'Food & H.',       slug: 'food-health',   icon: '🍎' },
-  { label: '2 Wheelers',      slug: 'two-wheelers',  icon: '🏍️' },
-];
-
 export default function Header() {
-  const dispatch         = useDispatch();
-  const navigate         = useNavigate();
-  const [params]         = useSearchParams();
+  const dispatch          = useDispatch();
+  const navigate          = useNavigate();
   const { user, isLoggedIn } = useAuth();
-  const cartCount        = useSelector((s) => s.cart.itemCount);
-  const wishlistCount    = useSelector((s) => s.wishlist.productIds.length);
-  const [query, setQuery]     = useState('');
-  const [showDrop, setShowDrop] = useState(false);
-  const dropRef = useRef(null);
-
-  const activeCategory = params.get('category') || '';
+  const cartCount         = useSelector((s) => s.cart.itemCount);
+  const wishlistCount     = useSelector((s) => s.wishlist.productIds.length);
+  const [query, setQuery]       = useState('');
+  const [showUserDrop, setShowUserDrop] = useState(false);
+  const [showMoreDrop, setShowMoreDrop] = useState(false);
+  const userDropRef = useRef(null);
+  const moreDropRef = useRef(null);
 
   useEffect(() => {
     function handleClick(e) {
-      if (dropRef.current && !dropRef.current.contains(e.target)) setShowDrop(false);
+      if (userDropRef.current && !userDropRef.current.contains(e.target)) setShowUserDrop(false);
+      if (moreDropRef.current && !moreDropRef.current.contains(e.target)) setShowMoreDrop(false);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -58,20 +41,15 @@ export default function Header() {
     dispatch(logout());
     dispatch(clearCartState());
     dispatch(setWishlistIds([]));
-    setShowDrop(false);
+    setShowUserDrop(false);
     navigate('/');
-  }
-
-  function navToCategory(slug) {
-    if (slug) navigate(`/products?category=${slug}`);
-    else navigate('/products');
   }
 
   return (
     <header className={styles.header}>
-      {/* ── Main bar ─────────────────────────────────────────── */}
       <div className={styles.mainBar}>
         <div className={styles.container}>
+          {/* Logo */}
           <Link to="/" className={styles.logo}>
             <span className={styles.logoText}>
               Flipkart<span className={styles.logoPlus}>+</span>
@@ -79,6 +57,7 @@ export default function Header() {
             <span className={styles.logoSub}>Explore <span style={{ color: '#ffe51f' }}>Plus</span></span>
           </Link>
 
+          {/* Search */}
           <div className={styles.searchWrap}>
             <form onSubmit={handleSearch} className={styles.searchForm}>
               <input
@@ -93,45 +72,32 @@ export default function Header() {
             </form>
           </div>
 
+          {/* Nav actions */}
           <nav className={styles.navActions}>
-            {/* Wishlist */}
-            <Link to="/wishlist" className={styles.navBtn}>
-              <div className={styles.navBtnIcon}>
-                <Heart size={18} />
-              </div>
-              <span>Wishlist</span>
-              {wishlistCount > 0 && <span className={styles.badge}>{wishlistCount}</span>}
-            </Link>
-
-            {/* User */}
+            {/* Login / Account */}
             {isLoggedIn ? (
-              <div className={styles.dropdownWrap} ref={dropRef}>
-                <button
-                  className={styles.navBtn}
-                  onClick={() => setShowDrop((v) => !v)}
-                >
+              <div className={styles.dropdownWrap} ref={userDropRef}>
+                <button className={styles.navBtn} onClick={() => setShowUserDrop((v) => !v)}>
                   <div className={styles.navBtnIcon}>
-                    <User size={18} />
+                    <User size={16} />
                     <span>{user?.name?.split(' ')[0] || 'Account'}</span>
-                    <ChevronDown size={14} />
+                    <ChevronDown size={13} />
                   </div>
                 </button>
-                {showDrop && (
+                {showUserDrop && (
                   <div className={styles.dropdown}>
-                    <Link to="/orders" className={styles.dropdownItem} onClick={() => setShowDrop(false)}>
+                    <Link to="/orders" className={styles.dropdownItem} onClick={() => setShowUserDrop(false)}>
                       <Package size={15} /> My Orders
                     </Link>
-                    <Link to="/wishlist" className={styles.dropdownItem} onClick={() => setShowDrop(false)}>
+                    <Link to="/wishlist" className={styles.dropdownItem} onClick={() => setShowUserDrop(false)}>
                       <Heart size={15} /> Wishlist
+                      {wishlistCount > 0 && <span className={styles.dropBadge}>{wishlistCount}</span>}
                     </Link>
-                    <Link to="/addresses" className={styles.dropdownItem} onClick={() => setShowDrop(false)}>
+                    <Link to="/addresses" className={styles.dropdownItem} onClick={() => setShowUserDrop(false)}>
                       <MapPin size={15} /> Saved Addresses
                     </Link>
                     <div className={styles.dropdownSep} />
-                    <button
-                      className={`${styles.dropdownItem} ${styles.dropdownLogout}`}
-                      onClick={handleLogout}
-                    >
+                    <button className={`${styles.dropdownItem} ${styles.dropdownLogout}`} onClick={handleLogout}>
                       <LogOut size={15} /> Logout
                     </button>
                   </div>
@@ -140,15 +106,45 @@ export default function Header() {
             ) : (
               <Link to="/login" className={styles.navBtn}>
                 <div className={styles.navBtnIcon}>
-                  <UserCircle size={18} />
+                  <UserCircle size={16} />
                 </div>
                 <span>Login</span>
               </Link>
             )}
 
+            {/* Become a Seller */}
+            <a href="#" className={styles.navBtn} onClick={(e) => e.preventDefault()}>
+              <span>Become a Seller</span>
+            </a>
+
+            {/* More */}
+            <div className={styles.dropdownWrap} ref={moreDropRef}>
+              <button className={styles.navBtn} onClick={() => setShowMoreDrop((v) => !v)}>
+                <div className={styles.navBtnIcon}>
+                  <MoreHorizontal size={16} />
+                  <span>More</span>
+                  <ChevronDown size={13} />
+                </div>
+              </button>
+              {showMoreDrop && (
+                <div className={styles.dropdown} style={{ right: 0 }}>
+                  <Link to="/orders" className={styles.dropdownItem} onClick={() => setShowMoreDrop(false)}>
+                    <Package size={15} /> My Orders
+                  </Link>
+                  <Link to="/wishlist" className={styles.dropdownItem} onClick={() => setShowMoreDrop(false)}>
+                    <Heart size={15} /> Wishlist
+                  </Link>
+                  <div className={styles.dropdownSep} />
+                  <a href="#" className={styles.dropdownItem} onClick={(e) => e.preventDefault()}>
+                    <MoreHorizontal size={15} /> Notify Me
+                  </a>
+                </div>
+              )}
+            </div>
+
             {/* Cart */}
-            <Link to="/cart" className={styles.navBtn}>
-              <div className={styles.navBtnIcon} style={{ position: 'relative' }}>
+            <Link to="/cart" className={styles.navBtn} style={{ position: 'relative' }}>
+              <div className={styles.navBtnIcon}>
                 <ShoppingCart size={18} />
                 {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
               </div>
@@ -156,23 +152,6 @@ export default function Header() {
             </Link>
           </nav>
         </div>
-      </div>
-
-      {/* ── Category bar ─────────────────────────────────────── */}
-      <div className={styles.catBar}>
-        <ul className={styles.catList}>
-          {CATEGORIES.map((cat) => (
-            <li key={cat.slug}>
-              <button
-                className={`${styles.catItem} ${activeCategory === cat.slug ? styles.catItemActive : ''}`}
-                onClick={() => navToCategory(cat.slug)}
-              >
-                <span className={styles.catIcon}>{cat.icon}</span>
-                <span className={styles.catLabel}>{cat.label}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
       </div>
     </header>
   );
