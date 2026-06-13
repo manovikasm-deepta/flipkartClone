@@ -234,17 +234,16 @@ async function placeOrder(userPublicId, addressPublicId, paymentMethod, buyNowIt
 
     const serialized = serializeOrder(order, insertedItems);
 
-    // Send order confirmation email (non-blocking)
-    query('SELECT email, name FROM users WHERE id = $1', [userId])
-      .then(({ rows }) => {
-        if (rows.length) {
-          const toEmail = (confirmationEmail && confirmationEmail.includes('@'))
-            ? confirmationEmail
-            : rows[0].email;
-          if (toEmail) sendOrderConfirmation(toEmail, serialized, rows[0].name);
-        }
-      })
-      .catch(() => {});
+    // Await email so it completes before the serverless function exits
+    try {
+      const { rows } = await query('SELECT email, name FROM users WHERE id = $1', [userId]);
+      if (rows.length) {
+        const toEmail = (confirmationEmail && confirmationEmail.includes('@'))
+          ? confirmationEmail
+          : rows[0].email;
+        if (toEmail) await sendOrderConfirmation(toEmail, serialized, rows[0].name);
+      }
+    } catch {}
 
     return serialized;
   } catch (err) {
