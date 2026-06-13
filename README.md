@@ -6,9 +6,9 @@ A production-grade, feature-complete e-commerce web application modelled after F
 
 | Service | URL |
 |---------|-----|
-| Frontend | https://flipkart-clone.vercel.app |
-| Backend API | https://flipkart-clone-api.onrender.com/api |
-| Health check | https://flipkart-clone-api.onrender.com/api/health |
+| Frontend | https://flipkart-clone-beta-two.vercel.app |
+| Backend API | https://flipkart-clone-api-nine.vercel.app/api |
+| Health check | https://flipkart-clone-api-nine.vercel.app/api/health |
 
 **Demo credentials:** `demo@flipkart.com` / `Demo@1234`
 
@@ -214,28 +214,25 @@ docker-compose up --build
 
 Set these in **Settings → Secrets and variables → Actions**:
 
-| Secret | How to get it |
-|--------|--------------|
-| `RENDER_API_KEY` | Render dashboard → Account Settings → API Keys |
-| `RENDER_SERVICE_ID` | Render service URL: `https://dashboard.render.com/web/srv-XXXXXXX` |
-| `API_HEALTH_URL` | `https://your-service-name.onrender.com/api/health` |
+| Secret | Value |
+|--------|-------|
 | `VERCEL_TOKEN` | Vercel dashboard → Settings → Tokens → Create |
-| `VERCEL_ORG_ID` | Run `vercel link` in `client/`, read from `.vercel/project.json` |
-| `VERCEL_PROJECT_ID` | Same `.vercel/project.json` after `vercel link` |
-| `TEST_DATABASE_URL` | Separate PostgreSQL instance for CI tests |
+| `VERCEL_ORG_ID` | `team_6bXzC8B815868CQWqvcagAmz` |
+| `VERCEL_PROJECT_ID_CLIENT` | `prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv` |
+| `VERCEL_PROJECT_ID_SERVER` | `prj_hJGAKSsGkYQC0Xv18keD0D1Ztz5s` |
 
 ### Frontend — Vercel
 
 1. Import GitHub repo on [vercel.com/new](https://vercel.com/new)
 2. Set **Root Directory** to `client`
-3. Add environment variable: `VITE_API_URL` → `https://your-api.onrender.com/api`
+3. Add environment variable: `VITE_API_URL` → `https://flipkart-clone-api-nine.vercel.app/api`
 4. Deploy — Vercel auto-detects Vite and runs `npm run build`
 
 **SPA routing** is handled by `client/vercel.json` — all paths rewrite to `/index.html`.
 
-### Backend — Render Web Service
+### Backend — Vercel (Serverless)
 
-1. **New Web Service** → connect GitHub repo
+1. Import same GitHub repo on [vercel.com/new](https://vercel.com/new)
 2. **Root Directory**: `server`
 3. **Build Command**: `npm ci`
 4. **Start Command**: `node server.js`
