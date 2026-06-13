@@ -7,7 +7,7 @@ VALUES (
   '9876543210',
   TRUE
 )
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 INSERT INTO addresses (user_id, name, phone, line1, line2, city, state, pincode, type, is_default)
 SELECT
