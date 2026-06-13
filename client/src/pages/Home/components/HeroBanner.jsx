@@ -8,53 +8,68 @@ import 'swiper/css/navigation';
 const SLIDES = [
   {
     id: 1,
-    title: 'Big Billion Days',
-    subtitle: 'Up to 80% off on Electronics & Mobiles',
-    cta: 'Shop Electronics',
-    href: '/products?category=electronics',
-    bg: 'linear-gradient(130deg, #0d1b47 0%, #1a237e 40%, #2874f0 100%)',
-    tag: '🔥 Limited Time',
-    tagColor: '#ffe51f',
+    bg: '#0d1b47',
+    tag: 'BIG BILLION DAYS',
+    tagColor: '#ffe11a',
+    title: 'Apple iPhone 15 Pro',
+    subtitle: 'Up to 11% Off',
+    extra: 'Starting ₹1,19,900',
+    cta: 'Buy Now',
+    href: '/products?category=mobiles',
+    img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=420&h=300&fit=crop&auto=format',
+    imgBg: 'radial-gradient(circle at 60% 50%, #1a3a8f 0%, #0d1b47 70%)',
   },
   {
     id: 2,
-    title: 'Fashion Fiesta',
-    subtitle: 'Top brands at jaw-dropping prices',
-    cta: 'Explore Fashion',
-    href: '/products?category=fashion',
-    bg: 'linear-gradient(130deg, #880e4f 0%, #c2185b 50%, #f06292 100%)',
-    tag: '👗 New Arrivals',
-    tagColor: '#fff176',
+    bg: '#1a1a2e',
+    tag: 'BESTSELLER',
+    tagColor: '#ffe11a',
+    title: 'Sony WH-1000XM5',
+    subtitle: 'Up to 29% Off',
+    extra: 'Noise Cancelling Headphones',
+    cta: 'Shop Now',
+    href: '/products?category=electronics',
+    img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=420&h=300&fit=crop&auto=format',
+    imgBg: 'radial-gradient(circle at 65% 50%, #2d2d60 0%, #1a1a2e 70%)',
   },
   {
     id: 3,
-    title: 'Appliance Sale',
-    subtitle: 'Upgrade your home this season',
-    cta: 'Shop Appliances',
-    href: '/products?category=appliances',
-    bg: 'linear-gradient(130deg, #1b5e20 0%, #2e7d32 50%, #43a047 100%)',
-    tag: '🏠 Home Upgrade',
-    tagColor: '#b9f6ca',
+    bg: '#880e4f',
+    tag: 'FASHION FIESTA',
+    tagColor: '#fff176',
+    title: 'Nike Air Max 270',
+    subtitle: 'Up to 31% Off',
+    extra: 'Top Running Shoes',
+    cta: 'Explore Now',
+    href: '/products?category=fashion',
+    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=420&h=300&fit=crop&auto=format',
+    imgBg: 'radial-gradient(circle at 65% 50%, #c2185b 0%, #880e4f 70%)',
   },
   {
     id: 4,
-    title: 'Book Marathon',
-    subtitle: 'Knowledge at unbeatable prices',
-    cta: 'Browse Books',
-    href: '/products?category=books',
-    bg: 'linear-gradient(130deg, #4a148c 0%, #6a1b9a 50%, #9c27b0 100%)',
-    tag: '📚 Best Sellers',
-    tagColor: '#e1bee7',
+    bg: '#004d40',
+    tag: 'HOT DEAL',
+    tagColor: '#b9f6ca',
+    title: 'Samsung Galaxy S24 Ultra',
+    subtitle: 'Up to 19% Off',
+    extra: '200MP Camera · S Pen Included',
+    cta: 'Buy Now',
+    href: '/products?category=mobiles',
+    img: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=420&h=300&fit=crop&auto=format',
+    imgBg: 'radial-gradient(circle at 65% 50%, #00695c 0%, #004d40 70%)',
   },
   {
     id: 5,
-    title: 'Super Deals',
-    subtitle: 'Discounts you can\'t ignore — every category',
-    cta: 'All Offers',
-    href: '/products',
-    bg: 'linear-gradient(130deg, #e65100 0%, #f57c00 50%, #ffa726 100%)',
-    tag: '💥 Today Only',
-    tagColor: '#fff9c4',
+    bg: '#4a148c',
+    tag: 'SUPER DEALS',
+    tagColor: '#e1bee7',
+    title: 'Bestselling Books',
+    subtitle: 'Starting ₹199',
+    extra: 'Atomic Habits · Sapiens & more',
+    cta: 'Browse Books',
+    href: '/products?category=books',
+    img: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=420&h=300&fit=crop&auto=format',
+    imgBg: 'radial-gradient(circle at 65% 50%, #6a1b9a 0%, #4a148c 70%)',
   },
 ];
 
@@ -62,84 +77,83 @@ export default function HeroBanner() {
   return (
     <div style={{ borderRadius: 4, overflow: 'hidden', boxShadow: 'var(--fk-shadow-sm)' }}>
       <style>{`
-        .hero-swiper .swiper-pagination-bullet { background: rgba(255,255,255,0.6); opacity: 1; }
-        .hero-swiper .swiper-pagination-bullet-active { background: #fff; }
+        .hero-swiper .swiper-pagination-bullet { background: rgba(255,255,255,0.5); opacity: 1; width: 8px; height: 8px; }
+        .hero-swiper .swiper-pagination-bullet-active { background: #fff; width: 20px; border-radius: 4px; }
         .hero-swiper .swiper-button-next,
-        .hero-swiper .swiper-button-prev { color: rgba(255,255,255,0.8); }
-        .hero-swiper .swiper-button-next::after,
-        .hero-swiper .swiper-button-prev::after { font-size: 20px; }
+        .hero-swiper .swiper-button-prev { color: rgba(255,255,255,0.7); transform: scale(0.7); }
+        .hero-swiper .swiper-button-next:hover,
+        .hero-swiper .swiper-button-prev:hover { color: #fff; }
       `}</style>
       <Swiper
         className="hero-swiper"
         modules={[Autoplay, Pagination, Navigation]}
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
+        autoplay={{ delay: 3500, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         navigation
         loop
-        speed={600}
+        speed={500}
       >
         {SLIDES.map((slide) => (
           <SwiperSlide key={slide.id}>
-            <div
-              style={{
-                background: slide.bg,
-                aspectRatio: '9/2',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0 60px',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Decorative circles */}
+            <div style={{
+              background: slide.bg,
+              height: 220,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0 48px 0 52px',
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* bg glow behind image */}
               <div style={{
-                position: 'absolute', right: -60, top: -60,
-                width: 380, height: 380,
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.06)',
-                pointerEvents: 'none',
-              }} />
-              <div style={{
-                position: 'absolute', right: 40, bottom: -80,
-                width: 220, height: 220,
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.04)',
+                position: 'absolute', right: 0, top: 0, bottom: 0,
+                width: '55%',
+                background: slide.imgBg,
                 pointerEvents: 'none',
               }} />
 
-              <div style={{ position: 'relative', zIndex: 1, maxWidth: 520 }}>
-                {/* Tag chip */}
+              {/* Left — text */}
+              <div style={{ position: 'relative', zIndex: 2, flex: '0 0 auto', maxWidth: 340 }}>
                 <span style={{
                   display: 'inline-block',
-                  background: 'rgba(0,0,0,0.25)',
+                  background: 'rgba(255,255,255,0.15)',
                   color: slide.tagColor,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  padding: '3px 10px',
-                  borderRadius: 20,
+                  fontSize: 11,
+                  fontWeight: 800,
+                  padding: '2px 10px',
+                  borderRadius: 2,
+                  letterSpacing: 1.2,
                   marginBottom: 10,
-                  letterSpacing: 0.4,
                 }}>
                   {slide.tag}
                 </span>
 
-                <h1 style={{
+                <h2 style={{
                   color: '#fff',
-                  fontSize: 'clamp(22px, 3vw, 40px)',
+                  fontSize: 'clamp(18px, 2.2vw, 28px)',
                   fontWeight: 800,
-                  margin: '0 0 6px',
-                  lineHeight: 1.15,
-                  textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  margin: '0 0 4px',
+                  lineHeight: 1.2,
                 }}>
                   {slide.title}
-                </h1>
+                </h2>
 
                 <p style={{
-                  color: 'rgba(255,255,255,0.85)',
-                  fontSize: 'clamp(12px, 1.5vw, 17px)',
-                  margin: '0 0 18px',
+                  color: slide.tagColor,
+                  fontSize: 'clamp(14px, 1.6vw, 20px)',
+                  fontWeight: 700,
+                  margin: '0 0 4px',
                 }}>
                   {slide.subtitle}
+                </p>
+
+                <p style={{
+                  color: 'rgba(255,255,255,0.75)',
+                  fontSize: 13,
+                  margin: '0 0 16px',
+                }}>
+                  {slide.extra}
                 </p>
 
                 <Link
@@ -147,22 +161,39 @@ export default function HeroBanner() {
                   style={{
                     display: 'inline-block',
                     background: '#fff',
-                    color: '#333',
+                    color: '#212121',
                     fontWeight: 700,
                     fontSize: 13,
-                    padding: '10px 24px',
-                    borderRadius: 4,
+                    padding: '8px 22px',
+                    borderRadius: 2,
                     textDecoration: 'none',
-                    textTransform: 'uppercase',
-                    letterSpacing: 0.5,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                    transition: 'transform 0.15s',
+                    letterSpacing: 0.3,
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
                 >
-                  {slide.cta} →
+                  {slide.cta}
                 </Link>
+              </div>
+
+              {/* Right — product image */}
+              <div style={{
+                position: 'relative', zIndex: 2,
+                flex: '0 0 auto',
+                width: 'clamp(160px, 28vw, 260px)',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <img
+                  src={slide.img}
+                  alt={slide.title}
+                  style={{
+                    height: '85%',
+                    width: '100%',
+                    objectFit: 'contain',
+                    filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.4))',
+                  }}
+                />
               </div>
             </div>
           </SwiperSlide>

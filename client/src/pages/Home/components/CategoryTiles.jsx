@@ -1,20 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 
+const CDN = 'https://static-assets-web.flixcart.com/apex-static/images/svgs/L1Nav';
+
 const CATEGORIES = [
-  { label: 'For You',     slug: '',             icon: '⭐' },
-  { label: 'Mobiles',     slug: 'mobiles',      icon: '📱' },
-  { label: 'Electronics', slug: 'electronics',  icon: '💻' },
-  { label: 'Fashion',     slug: 'fashion',      icon: '👗' },
-  { label: 'Beauty',      slug: 'beauty',       icon: '💄' },
-  { label: 'Appliances',  slug: 'appliances',   icon: '🏠' },
-  { label: 'Furniture',   slug: 'furniture',    icon: '🪑' },
-  { label: 'Books',       slug: 'books',        icon: '📚' },
-  { label: 'Toys',        slug: 'toys',         icon: '🎮' },
-  { label: 'Sports',      slug: 'sports',       icon: '⚽' },
-  { label: 'Grocery',     slug: 'grocery',      icon: '🛒' },
-  { label: 'Jewellery',   slug: 'jewellery',    icon: '💍' },
-  { label: 'Travel',      slug: 'travel',       icon: '✈️' },
-  { label: 'Offers',      slug: 'offers',       icon: '🏷️' },
+  { label: 'Mobiles',          slug: 'mobiles',      icon: 'mobiles' },
+  { label: 'Fashion',          slug: 'fashion',      icon: 'fashion' },
+  { label: 'Electronics',      slug: 'electronics',  icon: 'electronics' },
+  { label: 'Home & Kitchen',   slug: 'home-furniture', icon: 'home-final' },
+  { label: 'Beauty',           slug: 'beauty',       icon: 'beauty' },
+  { label: 'Books',            slug: 'books',        icon: 'books' },
+  { label: 'Sports',           slug: 'sports',       icon: 'sport' },
+  { label: 'Toys & Baby',      slug: 'toys',         icon: 'toy' },
+  { label: 'Appliances',       slug: 'appliances',   icon: 'tv' },
+  { label: 'Food & Health',    slug: 'food',         icon: 'food' },
+  { label: 'Furniture',        slug: 'furniture',    icon: 'furniture' },
+  { label: 'Auto Accessories', slug: 'auto',         icon: 'auto-acc' },
 ];
 
 export default function CategoryTiles() {
@@ -25,46 +25,47 @@ export default function CategoryTiles() {
       background: '#fff',
       borderRadius: 4,
       boxShadow: 'var(--fk-shadow-sm)',
-      padding: '12px 0 6px',
+      padding: '16px 0 8px',
     }}>
       <div style={{
         display: 'flex',
         overflowX: 'auto',
-        gap: 0,
         scrollbarWidth: 'none',
         padding: '0 8px',
       }}>
         {CATEGORIES.map((cat) => (
           <button
             key={cat.label}
-            onClick={() => navigate(cat.slug ? `/products?category=${cat.slug}` : '/products')}
+            onClick={() => navigate(`/products?category=${cat.slug}`)}
             style={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 8,
-              padding: '8px 16px 12px',
-              minWidth: 80,
+              gap: 6,
+              padding: '4px 20px 10px',
+              minWidth: 86,
               border: 'none',
               background: 'none',
               cursor: 'pointer',
-              borderRadius: 4,
-              transition: 'background 0.15s',
               flexShrink: 0,
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#f5f5f5'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+            onMouseEnter={(e) => { e.currentTarget.querySelector('span').style.color = '#2874f0'; }}
+            onMouseLeave={(e) => { e.currentTarget.querySelector('span').style.color = '#212121'; }}
           >
-            <span style={{ fontSize: 32, lineHeight: 1, display: 'flex', width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }}>
-              {cat.icon}
-            </span>
+            <img
+              src={`${CDN}/${cat.icon}.svg`}
+              alt={cat.label}
+              style={{ width: 64, height: 64, objectFit: 'contain' }}
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
             <span style={{
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 600,
-              color: 'var(--fk-text-primary)',
+              color: '#212121',
               textAlign: 'center',
               whiteSpace: 'nowrap',
-              lineHeight: 1.2,
+              lineHeight: 1.3,
+              transition: 'color 0.15s',
             }}>
               {cat.label}
             </span>
