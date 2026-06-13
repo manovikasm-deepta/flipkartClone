@@ -1,12 +1,14 @@
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
-  },
-});
+function getTransporter() {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS,
+    },
+  });
+}
 
 function inr(n) {
   return Number(n).toLocaleString('en-IN', {
@@ -144,12 +146,13 @@ function buildOrderEmailHTML(order, userName) {
 
 async function sendOrderConfirmation(toEmail, order, userName) {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
-    console.warn('[email] GMAIL_USER or GMAIL_PASS not set — skipping email');
+    console.error('[email] GMAIL_USER or GMAIL_PASS not set — skipping email');
     return;
   }
+  console.log(`[email] Sending order confirmation to ${toEmail} via ${process.env.GMAIL_USER}`);
 
   try {
-    await transporter.sendMail({
+    await getTransporter().sendMail({
       from: `"Flipkart Clone Orders" <${process.env.GMAIL_USER}>`,
       to: toEmail,
       subject: `✅ Order Confirmed: ${order.orderNumber} — ${Number(order.totalAmount).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}`,
