@@ -1,0 +1,16 @@
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--fk-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1.4;
+}
+
+.bestseller { background: #17a84e; color: #fff; }
+.hotdeal    { background: #ff4f64; color: #fff; }
+.superdeals { background: var(--fk-blue); color: #fff; }
+.outofstock { background: #e0e0e0; color: var(--fk-text-secondary); }
+.default    { background: #f0f0f0; color: var(--fk-text-primary); }

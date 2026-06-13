@@ -1,0 +1,245 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fk-page-bg);
+  padding: 24px 16px;
+}
+
+.card {
+  display: flex;
+  width: 100%;
+  max-width: 820px;
+  min-height: 480px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+}
+
+/* ── Left panel ─────────────────────────────────────── */
+.leftPanel {
+  width: 40%;
+  background: var(--fk-blue);
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.leftPanel::before {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  pointer-events: none;
+}
+
+.leftPanel::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.logoTag {
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.7);
+  font-style: italic;
+}
+
+.tagline {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.35;
+  position: relative;
+  z-index: 1;
+}
+
+.taglineHint {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  margin-top: 10px;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Right panel ────────────────────────────────────── */
+.rightPanel {
+  flex: 1;
+  background: #fff;
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.formTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--fk-text-primary);
+  margin-bottom: 6px;
+}
+
+.formSub {
+  font-size: 13px;
+  color: var(--fk-text-secondary);
+  margin-bottom: 28px;
+}
+
+/* ── Demo box ───────────────────────────────────────── */
+.demoBox {
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #1565c0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+/* ── Form fields ────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fk-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.inputWrap {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--fk-border);
+  border-radius: 4px;
+  padding: 11px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+  background: #fff;
+}
+.input:focus { border-color: var(--fk-blue); }
+.inputError { border-color: #e53e3e; }
+
+.pwdToggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--fk-text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+.pwdToggle:hover { color: var(--fk-blue); }
+
+.fieldError {
+  font-size: 11px;
+  color: #e53e3e;
+}
+
+/* ── Password strength ──────────────────────────────── */
+.strengthBar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--fk-border-light);
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.strengthFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s, background 0.3s;
+}
+
+.strengthLabel {
+  font-size: 11px;
+  margin-top: 3px;
+  font-weight: 600;
+}
+
+/* ── Submit button ──────────────────────────────────── */
+.submitBtn {
+  width: 100%;
+  padding: 13px;
+  background: var(--fk-blue);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  letter-spacing: 0.4px;
+  transition: opacity 0.15s;
+}
+.submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.submitBtn:hover:not(:disabled) { opacity: 0.9; }
+
+/* ── Footer link ────────────────────────────────────── */
+.footerLink {
+  text-align: center;
+  font-size: 13px;
+  color: var(--fk-text-secondary);
+  margin-top: 20px;
+}
+
+.link {
+  color: var(--fk-blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+.link:hover { text-decoration: underline; }
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 640px) {
+  .leftPanel { display: none; }
+  .card { max-width: 480px; }
+  .rightPanel { padding: 32px 24px; }
+}

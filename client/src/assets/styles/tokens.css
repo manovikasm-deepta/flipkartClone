@@ -1,0 +1,57 @@
+:root {
+  /* Brand */
+  --fk-blue:           #2874f0;
+  --fk-logo-yellow:    #ffe51f;
+  --fk-header-bg:      #2874f0;
+
+  /* Page */
+  --fk-page-bg:        #f1f3f6;
+  --fk-card-bg:        #ffffff;
+  --fk-section-blue:   #2096ff;
+  --fk-section-yellow: #fcd646;
+
+  /* Text */
+  --fk-text-primary:   #212121;
+  --fk-text-secondary: #878787;
+  --fk-text-muted:     #717478;
+  --fk-text-link:      #2874f0;
+
+  /* Price */
+  --fk-price-green:    #388e3c;
+  --fk-discount-red:   #ff6161;
+  --fk-mrp-color:      #878787;
+
+  /* CTA Buttons */
+  --fk-add-to-cart:    #ff9f00;
+  --fk-buy-now:        #fb641b;
+  --fk-place-order:    #fb641b;
+
+  /* Rating */
+  --fk-star-filled:    #fbbc05;
+  --fk-star-empty:     #cccccc;
+
+  /* Borders */
+  --fk-border:         #e0e0e0;
+  --fk-border-light:   #f0f0f0;
+
+  /* Search bar */
+  --fk-search-border:  #2ea1ff;
+
+  /* Cart badge */
+  --fk-cart-badge:     #e3122e;
+
+  /* Shadows */
+  --fk-shadow-sm:      0 1px 2px rgba(0,0,0,0.1);
+  --fk-shadow-md:      0 2px 8px rgba(0,0,0,0.12);
+  --fk-shadow-lg:      0 4px 16px rgba(0,0,0,0.15);
+
+  /* Radius */
+  --fk-radius-sm:      4px;
+  --fk-radius-md:      8px;
+  --fk-radius-lg:      12px;
+  --fk-radius-xl:      16px;
+
+  /* Typography */
+  --fk-font:           'Inter', 'Roboto', Arial, sans-serif;
+  --fk-font-size-base: 14px;
+}

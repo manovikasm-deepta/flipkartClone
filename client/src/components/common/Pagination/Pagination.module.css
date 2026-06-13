@@ -1,0 +1,48 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 24px 0;
+}
+
+.btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--fk-radius-sm);
+  border: 1px solid var(--fk-border);
+  background: var(--fk-card-bg);
+  color: var(--fk-text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.btn:hover:not(:disabled):not(.active) {
+  background: var(--fk-page-bg);
+  border-color: var(--fk-blue);
+  color: var(--fk-blue);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.active {
+  background: var(--fk-blue);
+  border-color: var(--fk-blue);
+  color: #fff;
+  font-weight: 700;
+}
+
+.ellipsis {
+  width: 36px;
+  text-align: center;
+  color: var(--fk-text-secondary);
+  font-size: 14px;
+  letter-spacing: 2px;
+}

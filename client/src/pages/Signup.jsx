@@ -1,0 +1,108 @@
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { registerUser, clearError } from '@/store/slices/authSlice';
+import { useAuth } from '@/hooks/useAuth';
+import toast from 'react-hot-toast';
+
+export default function SignupPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoggedIn, loading, error } = useAuth();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+
+  useEffect(() => { if (isLoggedIn) navigate('/'); }, [isLoggedIn]);
+  useEffect(() => () => dispatch(clearError()), [dispatch]);
+
+  async function onSubmit({ name, email, password, phone }) {
+    const res = await dispatch(registerUser({ name, email, password, phone }));
+    if (registerUser.fulfilled.match(res)) {
+      toast.success('Account created! Welcome!');
+    }
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--fk-page-bg)', display: 'flex', alignItems: 'stretch' }}>
+      {/* Left panel */}
+      <div style={{ width: 340, background: 'var(--fk-blue)', padding: '48px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Looks like you're new here!</h1>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+            Sign up with your mobile number to get started
+          </p>
+        </div>
+      </div>
+
+      {/* Right panel */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ width: '100%', maxWidth: 380 }}>
+          {error && (
+            <div style={{ marginBottom: 16, background: '#ffebee', border: '1px solid #ffcdd2', color: '#c62828', padding: '10px 14px', borderRadius: 4, fontSize: 13 }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {[
+              { name: 'name',    label: 'Full Name', type: 'text',     rules: { required: 'Name is required' } },
+              { name: 'email',   label: 'Email',     type: 'email',    rules: { required: 'Email is required' } },
+              { name: 'phone',   label: 'Mobile No. (optional)', type: 'tel', rules: {} },
+            ].map(({ name, label, type, rules }) => (
+              <div key={name} style={{ marginBottom: 20 }}>
+                <input
+                  type={type}
+                  placeholder={label}
+                  {...register(name, rules)}
+                  style={{ width: '100%', border: 'none', borderBottom: `2px solid ${errors[name] ? '#e53e3e' : 'var(--fk-border)'}`, padding: '10px 0', fontSize: 15, outline: 'none', background: 'transparent' }}
+                />
+                {errors[name] && <p style={{ fontSize: 12, color: '#e53e3e', marginTop: 4 }}>{errors[name].message}</p>}
+              </div>
+            ))}
+
+            <div style={{ marginBottom: 20 }}>
+              <input
+                type="password"
+                placeholder="Password (min 8 chars, 1 uppercase, 1 number)"
+                {...register('password', {
+                  required: 'Password required',
+                  minLength: { value: 8, message: 'At least 8 characters' },
+                  pattern: { value: /(?=.*[A-Z])(?=.*[0-9])/, message: 'Must include uppercase + number' },
+                })}
+                style={{ width: '100%', border: 'none', borderBottom: `2px solid ${errors.password ? '#e53e3e' : 'var(--fk-border)'}`, padding: '10px 0', fontSize: 15, outline: 'none', background: 'transparent' }}
+              />
+              {errors.password && <p style={{ fontSize: 12, color: '#e53e3e', marginTop: 4 }}>{errors.password.message}</p>}
+            </div>
+
+            <div style={{ marginBottom: 28 }}>
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                {...register('confirm', {
+                  required: 'Please confirm password',
+                  validate: (v) => v === watch('password') || 'Passwords do not match',
+                })}
+                style={{ width: '100%', border: 'none', borderBottom: `2px solid ${errors.confirm ? '#e53e3e' : 'var(--fk-border)'}`, padding: '10px 0', fontSize: 15, outline: 'none', background: 'transparent' }}
+              />
+              {errors.confirm && <p style={{ fontSize: 12, color: '#e53e3e', marginTop: 4 }}>{errors.confirm.message}</p>}
+            </div>
+
+            <p style={{ fontSize: 12, color: 'var(--fk-text-secondary)', marginBottom: 20, lineHeight: 1.5 }}>
+              By continuing, you agree to Flipkart's Terms of Use and Privacy Policy.
+            </p>
+
+            <button type="submit" disabled={loading}
+              style={{ width: '100%', background: 'var(--fk-buy-now)', color: '#fff', border: 'none', borderRadius: 4, padding: '14px', fontWeight: 700, fontSize: 15, cursor: 'pointer', opacity: loading ? 0.7 : 1 }}>
+              {loading ? 'Creating…' : 'Create Account'}
+            </button>
+          </form>
+
+          <div style={{ textAlign: 'center', margin: '24px 0', fontSize: 13 }}>
+            <span style={{ color: 'var(--fk-text-secondary)' }}>Existing user? </span>
+            <Link to="/login" style={{ color: 'var(--fk-blue)', fontWeight: 700 }}>Login</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

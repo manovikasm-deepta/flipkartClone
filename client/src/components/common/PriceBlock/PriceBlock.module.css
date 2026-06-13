@@ -1,0 +1,28 @@
+.wrap { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+
+/* sizes */
+.sm .price { font-size: 14px; }
+.sm .mrp   { font-size: 11px; }
+.sm .disc  { font-size: 11px; }
+
+.md .price { font-size: 18px; }
+.md .mrp   { font-size: 13px; }
+.md .disc  { font-size: 13px; }
+
+.lg .price { font-size: 22px; }
+.lg .mrp   { font-size: 15px; }
+.lg .disc  { font-size: 15px; }
+
+.price {
+  font-weight: 700;
+  color: var(--fk-text-primary);
+}
+.mrp {
+  color: var(--fk-mrp-color);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+.disc {
+  color: var(--fk-price-green);
+  font-weight: 600;
+}

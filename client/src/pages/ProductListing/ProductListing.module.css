@@ -1,0 +1,234 @@
+.page {
+  background: var(--fk-page-bg);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 12px 16px 40px;
+}
+
+.layout {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* ── Sidebar ────────────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.filterCard {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: var(--fk-shadow-sm);
+  overflow: hidden;
+}
+
+.filterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--fk-border-light);
+}
+
+.filterHeaderTitle {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--fk-text-primary);
+}
+
+.clearBtn {
+  font-size: 12px;
+  color: var(--fk-blue);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+}
+
+.filterSection {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--fk-border-light);
+}
+.filterSection:last-child { border-bottom: none; }
+
+.filterSectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fk-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.categoryItem {
+  display: block;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--fk-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  transition: color 0.15s;
+}
+.categoryItem:hover { color: var(--fk-blue); }
+.categoryItemActive {
+  color: var(--fk-blue);
+  font-weight: 600;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.ratingLabel {
+  font-size: 13px;
+  color: var(--fk-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.starPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: #388e3c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.priceInputs {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.priceInput {
+  flex: 1;
+  border: 1px solid var(--fk-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  outline: none;
+  min-width: 0;
+}
+.priceInput:focus { border-color: var(--fk-blue); }
+
+.goBtn {
+  background: var(--fk-blue);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── Main ───────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sortBar {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: var(--fk-shadow-sm);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.resultCount {
+  font-size: 13px;
+  color: var(--fk-text-secondary);
+  flex: 1;
+  white-space: nowrap;
+}
+
+.sortLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fk-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.sortOptions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.sortBtn {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fk-text-secondary);
+  background: none;
+  border: none;
+  padding: 4px 10px 6px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sortBtn:hover { color: var(--fk-blue); }
+
+.sortBtnActive {
+  color: var(--fk-blue);
+  font-weight: 700;
+  border-bottom-color: var(--fk-blue);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--fk-border-light);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--fk-shadow-sm);
+}
+
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; position: static; max-height: none; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+}
