@@ -1,25 +1,22 @@
-import { Link, useNavigate }              from 'react-router-dom';
-import { ShoppingCart, Heart, Search,
-         User, LogOut, Package, ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect }    from 'react';
-import { useSelector }                    from 'react-redux';
-import { useAuth }                        from '@/hooks/useAuth';
+import { Link, useNavigate }                            from 'react-router-dom';
+import { ShoppingCart, Search, User, LogOut, Package,
+         ChevronDown, Heart }                           from 'lucide-react';
+import { useState, useRef, useEffect }                  from 'react';
+import { useSelector }                                  from 'react-redux';
+import { useAuth }                                      from '@/hooks/useAuth';
 
 export default function Header() {
-  const navigate           = useNavigate();
+  const navigate                         = useNavigate();
   const { user, isAuthenticated, signOut } = useAuth();
-  const cartCount          = useSelector((s) => s.cart.items.reduce((a, i) => a + i.quantity, 0));
-  const wishlistCount      = useSelector((s) => s.wishlist.productIds.length);
-  const [query, setQuery]  = useState('');
+  const cartCount = useSelector((s) => s.cart.items.reduce((a, i) => a + i.quantity, 0));
+  const [query,    setQuery]    = useState('');
   const [dropdown, setDropdown] = useState(false);
-  const dropRef            = useRef(null);
+  const dropRef                 = useRef(null);
 
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (dropRef.current && !dropRef.current.contains(e.target)) setDropdown(false);
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    function outside(e) { if (dropRef.current && !dropRef.current.contains(e.target)) setDropdown(false); }
+    document.addEventListener('mousedown', outside);
+    return () => document.removeEventListener('mousedown', outside);
   }, []);
 
   function handleSearch(e) {
@@ -28,100 +25,90 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-blue-600 shadow-md">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
-        <Link to="/" className="flex-shrink-0">
-          <span className="text-white font-bold text-xl tracking-tight italic">
-            Flipkart
-            <span className="text-amber-300 text-xs font-normal normal-case ml-0.5">clone</span>
-          </span>
+    <header style={{ background: '#2874f0', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, padding: '0 16px', height: 56 }}>
+
+        {/* ── Logo ─────────────────────────────────────── */}
+        <Link to="/" style={{ textDecoration: 'none', flexShrink: 0, marginRight: 4 }}>
+          <div style={{ lineHeight: 1 }}>
+            <div style={{ color: '#fff', fontStyle: 'italic', fontWeight: 700, fontSize: 20 }}>Flipkart</div>
+            <div style={{ color: '#ffe11a', fontSize: 10, display: 'flex', alignItems: 'center', gap: 2 }}>
+              <span style={{ fontStyle: 'italic' }}>Explore</span>
+              <span style={{ fontStyle: 'italic', fontWeight: 600 }}>Plus</span>
+              <span>✦</span>
+            </div>
+          </div>
         </Link>
 
-        <form onSubmit={handleSearch} className="flex-1 max-w-xl">
-          <div className="relative">
+        {/* ── Search ───────────────────────────────────── */}
+        <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: 664 }}>
+          <div style={{ display: 'flex', background: '#fff', borderRadius: 2, height: 36, overflow: 'hidden' }}>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for products, brands and more"
-              className="w-full pl-4 pr-10 py-2 rounded text-sm focus:outline-none"
+              style={{ flex: 1, border: 'none', outline: 'none', padding: '0 14px', fontSize: 14, color: '#212121', fontFamily: 'inherit' }}
             />
             <button
               type="submit"
-              className="absolute right-0 top-0 h-full px-3 text-blue-600 hover:text-blue-800"
+              style={{ background: '#fff', border: 'none', borderLeft: '1px solid #f0f0f0', padding: '0 16px', cursor: 'pointer', color: '#2874f0', display: 'flex', alignItems: 'center' }}
             >
-              <Search size={18} />
+              <Search size={18} strokeWidth={2.5} />
             </button>
           </div>
         </form>
 
-        <nav className="flex items-center gap-1 ml-auto">
-          <Link
-            to="/wishlist"
-            className="relative flex flex-col items-center px-3 py-1 text-white hover:bg-blue-700 rounded transition-colors"
-          >
-            <Heart size={20} />
-            <span className="text-xs">Wishlist</span>
-            {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-amber-400 text-gray-900 text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {wishlistCount}
-              </span>
-            )}
-          </Link>
+        {/* ── Right nav ────────────────────────────────── */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 20, marginLeft: 'auto', flexShrink: 0 }}>
 
-          <Link
-            to="/cart"
-            className="relative flex flex-col items-center px-3 py-1 text-white hover:bg-blue-700 rounded transition-colors"
-          >
-            <ShoppingCart size={20} />
-            <span className="text-xs">Cart</span>
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-amber-400 text-gray-900 text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          <a href="#" style={{ color: '#fff', fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap', fontWeight: 500 }}>
+            Become a Seller
+          </a>
 
           {isAuthenticated ? (
-            <div className="relative" ref={dropRef}>
+            <div ref={dropRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => setDropdown((v) => !v)}
-                className="flex flex-col items-center px-3 py-1 text-white hover:bg-blue-700 rounded transition-colors"
+                style={{ background: '#fff', color: '#2874f0', border: 'none', borderRadius: 2, padding: '5px 12px', fontWeight: 600, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', fontFamily: 'inherit' }}
               >
-                <User size={20} />
-                <span className="flex items-center gap-0.5 text-xs">
-                  {user?.name?.split(' ')[0]}
-                  <ChevronDown size={12} />
-                </span>
+                {user?.name?.split(' ')[0] || 'Account'}
+                <ChevronDown size={14} />
               </button>
               {dropdown && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded shadow-lg border py-1 z-50">
-                  <Link
-                    to="/orders"
-                    onClick={() => setDropdown(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                  >
-                    <Package size={16} /> My Orders
-                  </Link>
-                  <button
-                    onClick={() => { signOut(); setDropdown(false); navigate('/'); }}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
-                  >
+                <div style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: '#fff', borderRadius: 2, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', minWidth: 220, zIndex: 200, overflow: 'hidden' }}>
+                  <Link to="/orders"   onClick={() => setDropdown(false)} style={dropLink}><Package size={16} /> My Orders</Link>
+                  <Link to="/wishlist" onClick={() => setDropdown(false)} style={dropLink}><Heart size={16} />   Wishlist</Link>
+                  <div style={{ height: 1, background: '#f0f0f0', margin: '4px 0' }} />
+                  <button onClick={() => { signOut(); setDropdown(false); navigate('/'); }} style={{ ...dropLink, color: '#ff4343', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontFamily: 'inherit' }}>
                     <LogOut size={16} /> Logout
                   </button>
                 </div>
               )}
             </div>
           ) : (
-            <Link
-              to="/login"
-              className="flex flex-col items-center px-3 py-1 text-white hover:bg-blue-700 rounded transition-colors"
-            >
-              <User size={20} />
-              <span className="text-xs">Login</span>
+            <Link to="/login" style={{ background: '#fff', color: '#2874f0', borderRadius: 2, padding: '5px 20px', fontWeight: 600, fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+              Login
             </Link>
           )}
+
+          <Link to="/cart" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#fff', textDecoration: 'none' }}>
+            <span style={{ position: 'relative' }}>
+              <ShoppingCart size={22} />
+              {cartCount > 0 && (
+                <span style={{ position: 'absolute', top: -6, right: -7, background: '#ff6161', color: '#fff', borderRadius: 10, minWidth: 16, height: 16, fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 600 }}>Cart</span>
+          </Link>
         </nav>
       </div>
     </header>
   );
 }
+
+const dropLink = {
+  display: 'flex', alignItems: 'center', gap: 10,
+  padding: '12px 16px', fontSize: 14, color: '#212121', textDecoration: 'none',
+};

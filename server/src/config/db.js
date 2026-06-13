@@ -13,7 +13,6 @@ const pool = new Pool({
 
 pool.on('error', (err) => {
   console.error('[db] Unexpected idle client error:', err.message);
-  process.exit(-1);
 });
 
 async function query(text, params) {

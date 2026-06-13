@@ -8,8 +8,9 @@ import { fetchCart } from '@/store/slices/cartSlice';
 import { fetchWishlistIds } from '@/store/slices/wishlistSlice';
 import { useAuth } from '@/hooks/useAuth';
 
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import Header      from '@/components/layout/Header';
+import CategoryNav  from '@/components/layout/CategoryNav/index';
+import Footer       from '@/components/layout/Footer';
 
 import HomePage            from '@/pages/Home/index';
 import ProductListingPage  from '@/pages/ProductListing/index';
@@ -48,6 +49,7 @@ function Layout() {
       <Toaster position="top-right" toastOptions={{ duration: 3000, style: { fontSize: '14px' } }} />
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
+        <CategoryNav />
         <main style={{ flex: 1 }}>
           <Outlet />
         </main>

@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Server: lint, migrate, test ──────────────────────────────────────────────
+  lint-and-test-server:
+    name: Server — Lint & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER:     ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB:       flipkart_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install
+        run: cd server && npm ci
+
+      - name: Lint
+        run: cd server && npm run lint
+
+      - name: Run migrations
+        working-directory: server
+        env:
+          NODE_ENV:     test
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/flipkart_test
+          JWT_SECRET:   test-secret-key-for-ci-pipeline-minimum-32-chars
+        run: npm run migrate
+
+      - name: Test
+        working-directory: server
+        env:
+          NODE_ENV:     test
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/flipkart_test
+          JWT_SECRET:   test-secret-key-for-ci-pipeline-minimum-32-chars
+          PORT:         5001
+        run: npm test
+
+  # ── Client: lint, build ──────────────────────────────────────────────────────
+  lint-and-build-client:
+    name: Client — Lint & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install
+        run: cd client && npm ci
+
+      - name: Lint
+        run: cd client && npm run lint
+
+      - name: Build
+        working-directory: client
+        env:
+          VITE_API_URL: https://placeholder.onrender.com/api
+        run: npm run build
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-dist
+          path: client/dist
+          retention-days: 1
