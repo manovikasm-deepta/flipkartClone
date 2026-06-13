@@ -54,11 +54,6 @@ jobs:
           echo "Got org: $ORG"
           echo "id=$ORG" >> $GITHUB_OUTPUT
 
-      - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
-
       - name: Build
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
