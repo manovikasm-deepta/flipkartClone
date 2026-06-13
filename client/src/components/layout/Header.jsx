@@ -2,12 +2,14 @@ import { Link, useNavigate }                            from 'react-router-dom';
 import { ShoppingCart, Search, LogOut, Package,
          ChevronDown, Heart }                           from 'lucide-react';
 import { useState, useRef, useEffect }                  from 'react';
-import { useSelector }                                  from 'react-redux';
+import { useDispatch, useSelector }                     from 'react-redux';
 import { useAuth }                                      from '@/hooks/useAuth';
+import { logout }                                       from '@/store/slices/authSlice';
 
 export default function Header() {
+  const dispatch                         = useDispatch();
   const navigate                         = useNavigate();
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, isAuthenticated }        = useAuth();
   const cartCount = useSelector((s) => s.cart.items.reduce((a, i) => a + i.quantity, 0));
   const [query,    setQuery]    = useState('');
   const [dropdown, setDropdown] = useState(false);
@@ -75,7 +77,7 @@ export default function Header() {
                   <Link to="/orders"   onClick={() => setDropdown(false)} style={dropLink}><Package size={16} /> My Orders</Link>
                   <Link to="/wishlist" onClick={() => setDropdown(false)} style={dropLink}><Heart size={16} />   Wishlist</Link>
                   <div style={{ height: 1, background: '#f0f0f0', margin: '4px 0' }} />
-                  <button onClick={() => { signOut(); setDropdown(false); navigate('/'); }} style={{ ...dropLink, color: '#ff4343', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  <button onClick={() => { dispatch(logout()); setDropdown(false); navigate('/'); }} style={{ ...dropLink, color: '#ff4343', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontFamily: 'inherit' }}>
                     <LogOut size={16} /> Logout
                   </button>
                 </div>

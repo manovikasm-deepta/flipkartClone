@@ -8,26 +8,22 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
-env:
-  VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
-
 jobs:
-  deploy:
-    name: Deploy → Vercel
+  # ── Deploy backend (Express) ─────────────────────────────────────────────────
+  deploy-backend:
+    name: Deploy → Vercel (Backend)
     runs-on: ubuntu-latest
     environment: production
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      # Push runtime env vars into the Vercel project via REST API
       - name: Configure Vercel environment variables
         run: |
-          PROJECT="prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv"
           TOKEN="${{ secrets.VERCEL_TOKEN }}"
+          PROJECT="${{ secrets.VERCEL_PROJECT_ID_SERVER }}"
 
           push_env() {
             curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT/env?upsert=true" \
@@ -42,34 +38,19 @@ jobs:
           push_env "DATABASE_URL" "${{ secrets.DATABASE_URL }}"
           push_env "JWT_SECRET"   "${{ secrets.JWT_SECRET }}"
 
-      # Fetch org ID from the project (accountId field)
-      - name: Get Vercel org ID from project
-        id: org
-        run: |
-          PROJECT="prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv"
-          TOKEN="${{ secrets.VERCEL_TOKEN }}"
-          ORG=$(curl -s "https://api.vercel.com/v9/projects/$PROJECT" \
-            -H "Authorization: Bearer $TOKEN" \
-            | python3 -c "import sys,json; print(json.load(sys.stdin).get('accountId',''))")
-          echo "Got org: $ORG"
-          echo "id=$ORG" >> $GITHUB_OUTPUT
-
-      - name: Build
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy server to Vercel
+        working-directory: server
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
 
-      - name: Deploy to production
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
-
+  # ── Seed production database ─────────────────────────────────────────────────
   seed-db:
     name: Seed Production DB
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: deploy-backend
     environment: production
-
     steps:
       - uses: actions/checkout@v4
 
@@ -95,3 +76,36 @@ jobs:
           NODE_ENV:     production
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npm run seed
+
+  # ── Deploy frontend (React/Vite) ─────────────────────────────────────────────
+  deploy-frontend:
+    name: Deploy → Vercel (Frontend)
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel project settings
+        working-directory: client
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
+
+      - name: Build project artifacts
+        working-directory: client
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
+
+      - name: Deploy to production
+        working-directory: client
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
