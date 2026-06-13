@@ -1,11 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+function loadBuyNow() {
+  try { return JSON.parse(sessionStorage.getItem('fk_buy_now')); } catch { return null; }
+}
+
 const checkoutSlice = createSlice({
   name: 'checkout',
   initialState: {
     step:               1,
     selectedAddressId:  null,
-    buyNowItem:         null,
+    buyNowItem:         loadBuyNow(),
     paymentMethod:      'COD',
     confirmationEmail:  '',
   },
@@ -18,9 +22,11 @@ const checkoutSlice = createSlice({
     },
     setBuyNowItem(state, { payload }) {
       state.buyNowItem = payload;
+      try { sessionStorage.setItem('fk_buy_now', JSON.stringify(payload)); } catch {}
     },
     clearBuyNow(state) {
       state.buyNowItem = null;
+      try { sessionStorage.removeItem('fk_buy_now'); } catch {}
     },
     setPaymentMethod(state, { payload }) {
       state.paymentMethod = payload;
@@ -34,6 +40,7 @@ const checkoutSlice = createSlice({
       state.buyNowItem        = null;
       state.paymentMethod     = 'COD';
       state.confirmationEmail = '';
+      try { sessionStorage.removeItem('fk_buy_now'); } catch {}
     },
   },
 });

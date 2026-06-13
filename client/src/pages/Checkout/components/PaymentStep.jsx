@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setPaymentMethod, resetCheckout } from '@/store/slices/checkoutSlice';
+import { setPaymentMethod, setConfirmationEmail, resetCheckout } from '@/store/slices/checkoutSlice';
 import { clearCartState } from '@/store/slices/cartSlice';
 import { orderService } from '@/services/api';
+import { Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import styles from '../Checkout.module.css';
 
@@ -103,6 +104,30 @@ export default function PaymentStep({ priceDetails }) {
             You will pay <strong>{inr(priceDetails?.totalAmount)}</strong> in cash when your order arrives at your doorstep.
           </div>
         )}
+
+        {/* Email confirmation — shown here for cart checkout users */}
+        <div style={{
+          background: '#e8f5e9', border: '1px solid #c8e6c9',
+          borderRadius: 4, padding: '10px 14px', marginTop: 16,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <Mail size={14} style={{ color: '#2e7d32', flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: '#2e7d32', fontWeight: 600 }}>
+              Order confirmation email:
+            </span>
+          </div>
+          <input
+            type="email"
+            value={confirmationEmail}
+            onChange={(e) => dispatch(setConfirmationEmail(e.target.value))}
+            placeholder="Enter email to receive order confirmation"
+            style={{
+              width: '100%', border: '1px solid #c8e6c9', borderRadius: 3,
+              padding: '7px 10px', fontSize: 13, outline: 'none',
+              boxSizing: 'border-box', background: '#fff',
+            }}
+          />
+        </div>
 
         <button
           className={styles.placeOrderBtn}

@@ -17,14 +17,24 @@ const CORS_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .map((o) => o.trim())
   .filter(Boolean);
 
+function corsOriginFn(origin, callback) {
+  // same-origin requests (serverless on Vercel) have no Origin header
+  if (!origin) return callback(null, true);
+  // explicitly listed origins
+  if (CORS_ORIGINS.includes('*') || CORS_ORIGINS.includes(origin)) return callback(null, true);
+  // any *.vercel.app preview/production URL
+  if (/\.vercel\.app$/.test(origin)) return callback(null, true);
+  callback(new Error(`CORS: ${origin} not allowed`));
+}
+
 // ─── Middleware (order is critical) ──────────────────────────────────────────
 app.use(helmet());
 
 app.use(
   cors({
-    origin:      CORS_ORIGINS,
-    credentials: true,
-    methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    origin:         corsOriginFn,
+    credentials:    true,
+    methods:        ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
