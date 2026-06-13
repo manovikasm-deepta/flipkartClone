@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Plus, MapPin, Check } from 'lucide-react';
+import { Plus, MapPin, Check, Mail } from 'lucide-react';
 import { setSelectedAddress, setStep } from '@/store/slices/checkoutSlice';
 import { addressService } from '@/services/api';
+import { useAuth } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
 import styles from '../Checkout.module.css';
 
@@ -12,6 +13,7 @@ const ADDRESS_TYPES = ['HOME', 'WORK', 'OTHER'];
 export default function AddressStep({ addresses, onAddressesChange }) {
   const dispatch = useDispatch();
   const selectedAddressId = useSelector((s) => s.checkout.selectedAddressId);
+  const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -131,6 +133,31 @@ export default function AddressStep({ addresses, onAddressesChange }) {
               </button>
             </div>
           </form>
+        )}
+
+        {/* Email confirmation notice */}
+        {user?.email && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            background: '#e8f5e9',
+            border: '1px solid #c8e6c9',
+            borderRadius: 4,
+            padding: '10px 14px',
+            marginTop: 12,
+            marginBottom: 4,
+          }}>
+            <Mail size={16} style={{ color: '#2e7d32', flexShrink: 0 }} />
+            <div>
+              <span style={{ fontSize: 12, color: '#2e7d32', fontWeight: 600 }}>
+                Order confirmation will be sent to:
+              </span>
+              <span style={{ fontSize: 13, color: '#212121', fontWeight: 700, marginLeft: 6 }}>
+                {user.email}
+              </span>
+            </div>
+          </div>
         )}
 
         <button

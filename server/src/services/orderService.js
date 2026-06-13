@@ -1,5 +1,6 @@
-const { pool, query } = require('../config/db');
-const AppError        = require('../utils/AppError');
+const { pool, query }          = require('../config/db');
+const AppError                 = require('../utils/AppError');
+const { sendOrderConfirmation } = require('../utils/emailService');
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function round2(n) { return Math.round(n * 100) / 100; }
@@ -193,7 +194,19 @@ async function placeOrder(userPublicId, addressPublicId, paymentMethod) {
     await client.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
 
     await client.query('COMMIT');
-    return serializeOrder(order, insertedItems);
+
+    const serialized = serializeOrder(order, insertedItems);
+
+    // Send order confirmation email (non-blocking)
+    query('SELECT email, name FROM users WHERE id = $1', [userId])
+      .then(({ rows }) => {
+        if (rows.length && rows[0].email) {
+          sendOrderConfirmation(rows[0].email, serialized, rows[0].name);
+        }
+      })
+      .catch(() => {});
+
+    return serialized;
   } catch (err) {
     await client.query('ROLLBACK');
     throw err;
