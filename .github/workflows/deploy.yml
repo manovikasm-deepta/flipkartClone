@@ -24,7 +24,6 @@ jobs:
         run: npm install -g vercel@latest
 
       # Push runtime env vars into the Vercel project via REST API
-      # (project ID only — no org ID required)
       - name: Configure Vercel environment variables
         run: |
           PROJECT="prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv"
@@ -34,18 +33,41 @@ jobs:
             curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT/env?upsert=true" \
               -H "Authorization: Bearer $TOKEN" \
               -H "Content-Type: application/json" \
-              -d "{\"key\":\"$1\",\"value\":\"$2\",\"type\":\"encrypted\",\"target\":[\"production\"]}"
+              -d "{\"key\":\"$1\",\"value\":\"$2\",\"type\":\"encrypted\",\"target\":[\"production\"]}" > /dev/null
           }
 
-          push_env "NODE_ENV"    "production"
-          push_env "GMAIL_USER"  "mukkerlamanovikas@gmail.com"
-          push_env "GMAIL_PASS"  "xhihqvmjbxcdwcga"
+          push_env "NODE_ENV"     "production"
+          push_env "GMAIL_USER"   "mukkerlamanovikas@gmail.com"
+          push_env "GMAIL_PASS"   "xhihqvmjbxcdwcga"
           push_env "DATABASE_URL" "${{ secrets.DATABASE_URL }}"
           push_env "JWT_SECRET"   "${{ secrets.JWT_SECRET }}"
 
-      # Source deployment — Vercel builds on their servers using vercel.json
+      # Fetch org ID from the project (accountId field)
+      - name: Get Vercel org ID from project
+        id: org
+        run: |
+          PROJECT="prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv"
+          TOKEN="${{ secrets.VERCEL_TOKEN }}"
+          ORG=$(curl -s "https://api.vercel.com/v9/projects/$PROJECT" \
+            -H "Authorization: Bearer $TOKEN" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin).get('accountId',''))")
+          echo "Got org: $ORG"
+          echo "id=$ORG" >> $GITHUB_OUTPUT
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
+
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
+
       - name: Deploy to production
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
 
   seed-db:
     name: Seed Production DB
