@@ -85,7 +85,7 @@ const SLIDES = [
 
 export default function HeroBanner() {
   return (
-    <div style={{ overflow: 'hidden' }}>
+    <div style={{ overflow: 'hidden', lineHeight: 0 }}>
       <style>{`
         .hero-swiper .swiper-pagination-bullet {
           background: rgba(0,0,0,0.25); opacity: 1; width: 7px; height: 7px;
@@ -213,18 +213,20 @@ export default function HeroBanner() {
                 <div style={{
                   flex: '0 0 auto',
                   width: 'clamp(180px, 28vw, 280px)',
-                  height: '100%',
+                  height: 240,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  overflow: 'hidden',
                 }}>
                   <img
                     src={slide.img}
                     alt={slide.title}
                     style={{
-                      height: '88%',
-                      width: '100%',
+                      maxHeight: '100%',
+                      maxWidth: '100%',
                       objectFit: 'contain',
+                      display: 'block',
                       filter: 'drop-shadow(0 10px 28px rgba(0,0,0,0.18))',
                     }}
                   />
