@@ -35,7 +35,7 @@ export default function ProductDetailPage() {
       .catch(() => { toast.error('Product not found'); navigate('/products'); })
       .finally(() => setLoading(false));
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [productId]);
+  }, [productId, navigate]);
 
   async function handleWishlist() {
     if (!isLoggedIn) { toast.error('Please login to save items'); navigate('/login'); return; }

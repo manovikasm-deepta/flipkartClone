@@ -30,7 +30,7 @@ export default function ProductDetailPage() {
       .then((r) => setProduct(r.data))
       .catch(() => navigate('/products'))
       .finally(() => setLoading(false));
-  }, [productId]);
+  }, [productId, navigate]);
 
   const isWishlisted = product ? productIds.includes(product.id) : false;
 

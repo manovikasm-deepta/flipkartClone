@@ -12,7 +12,7 @@ export default function SignupPage() {
   const { isLoggedIn, loading, error } = useAuth();
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
-  useEffect(() => { if (isLoggedIn) navigate('/'); }, [isLoggedIn]);
+  useEffect(() => { if (isLoggedIn) navigate('/'); }, [isLoggedIn, navigate]);
   useEffect(() => () => dispatch(clearError()), [dispatch]);
 
   async function onSubmit({ name, email, password, phone }) {
@@ -27,7 +27,7 @@ export default function SignupPage() {
       {/* Left panel */}
       <div style={{ width: 340, background: 'var(--fk-blue)', padding: '48px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Looks like you're new here!</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Looks like you&apos;re new here!</h1>
           <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
             Sign up with your mobile number to get started
           </p>
@@ -88,7 +88,7 @@ export default function SignupPage() {
             </div>
 
             <p style={{ fontSize: 12, color: 'var(--fk-text-secondary)', marginBottom: 20, lineHeight: 1.5 }}>
-              By continuing, you agree to Flipkart's Terms of Use and Privacy Policy.
+              By continuing, you agree to Flipkart&apos;s Terms of Use and Privacy Policy.
             </p>
 
             <button type="submit" disabled={loading}

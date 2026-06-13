@@ -16,7 +16,7 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const returnUrl  = location.state?.returnUrl || '/';
 
-  useEffect(() => { if (isLoggedIn) navigate(returnUrl, { replace: true }); }, [isLoggedIn]);
+  useEffect(() => { if (isLoggedIn) navigate(returnUrl, { replace: true }); }, [isLoggedIn, navigate, returnUrl]);
   useEffect(() => () => dispatch(clearError()), [dispatch]);
 
   async function onSubmit(data) {
@@ -73,7 +73,7 @@ export default function LoginPage() {
             </div>
 
             <p style={{ fontSize: 12, color: 'var(--fk-text-secondary)', marginBottom: 20, lineHeight: 1.5 }}>
-              By continuing, you agree to Flipkart's Terms of Use and Privacy Policy.
+              By continuing, you agree to Flipkart&apos;s Terms of Use and Privacy Policy.
             </p>
 
             <button type="submit" disabled={loading}

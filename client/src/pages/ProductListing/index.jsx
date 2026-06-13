@@ -87,7 +87,7 @@ export default function ProductListingPage() {
         {search && (
           <h1 style={{ fontSize: 16, fontWeight: 400, color: 'var(--fk-text-secondary)', marginBottom: 12 }}>
             Search results for&nbsp;
-            <strong style={{ color: 'var(--fk-text-primary)' }}>"{search}"</strong>
+            <strong style={{ color: 'var(--fk-text-primary)' }}>&quot;{search}&quot;</strong>
             {pagination.total != null && (
               <span style={{ marginLeft: 8 }}>({pagination.total.toLocaleString()} items)</span>
             )}

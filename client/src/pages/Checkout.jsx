@@ -41,7 +41,7 @@ export default function CheckoutPage() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [dispatch, items.length, nav, selectedAddressId]);
 
   async function saveAddress(data) {
     try {

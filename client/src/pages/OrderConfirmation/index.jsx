@@ -24,7 +24,7 @@ export default function OrderConfirmationPage() {
       .then((r) => setOrder(r.data))
       .catch(() => navigate('/orders'))
       .finally(() => setLoading(false));
-  }, [orderId]);
+  }, [orderId, navigate]);
 
   function copyOrderId() {
     if (order?.orderNumber) {

@@ -28,7 +28,7 @@ import NotFoundPage         from '@/pages/NotFound/index';
 // ─── Layout: Header + Footer wrapper ─────────────────────────────────────────
 function Layout() {
   const dispatch = useDispatch();
-  const { token, isLoggedIn } = useAuth();
+  useAuth();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('fk_token');

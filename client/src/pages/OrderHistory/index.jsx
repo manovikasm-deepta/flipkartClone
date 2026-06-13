@@ -54,7 +54,7 @@ export default function OrderHistoryPage() {
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}><Package size={64} strokeWidth={1} /></div>
             <div className={styles.emptyTitle}>No orders yet</div>
-            <div className={styles.emptySub}>Looks like you haven't ordered anything yet.</div>
+            <div className={styles.emptySub}>Looks like you haven&apos;t ordered anything yet.</div>
             <Link to="/products" className={styles.shopBtn}>Start Shopping</Link>
           </div>
         ) : (

@@ -8,7 +8,7 @@ const SORT_OPTIONS = [
   { label: 'Discount',            value: 'discount_desc' },
 ];
 
-export default function SortBar({ sort, pagination = {}, page = 1, onSortChange }) {
+export default function SortBar({ sort, pagination = {}, onSortChange }) {
   const { total = 0 } = pagination;
 
   return (

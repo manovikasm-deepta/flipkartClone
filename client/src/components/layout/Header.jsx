@@ -1,5 +1,5 @@
 import { Link, useNavigate }                            from 'react-router-dom';
-import { ShoppingCart, Search, User, LogOut, Package,
+import { ShoppingCart, Search, LogOut, Package,
          ChevronDown, Heart }                           from 'lucide-react';
 import { useState, useRef, useEffect }                  from 'react';
 import { useSelector }                                  from 'react-redux';
