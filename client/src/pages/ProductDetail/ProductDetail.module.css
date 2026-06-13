@@ -39,7 +39,7 @@
   width: 45%;
   flex-shrink: 0;
   position: sticky;
-  top: 80px;
+  top: 132px;
 }
 
 .infoSection {
@@ -61,7 +61,7 @@
 
 .imageGridInner {
   display: grid;
-  grid-template-columns: 1fr 88px;
+  grid-template-columns: 80px 1fr;
   gap: 3px;
   background: var(--fk-border-light);
 }
@@ -74,6 +74,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
+  grid-column: 2;
   grid-row: 1 / 5;
   position: relative;
 }
@@ -112,14 +113,15 @@
   align-items: center;
   justify-content: center;
   padding: 6px;
+  grid-column: 1;
   transition: outline 0.1s;
 }
 .thumbWrap:hover { outline: 2px solid var(--fk-blue); outline-offset: -2px; }
 .thumbActive { outline: 2px solid var(--fk-blue); outline-offset: -2px; }
 
 .thumbImg {
-  width: 70px;
-  height: 70px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
 }
 

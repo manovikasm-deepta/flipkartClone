@@ -57,7 +57,7 @@ export const cartService = {
 
 export const orderService = {
   getOrders:    ()                               => api.get('/orders'),
-  placeOrder:   ({ addressId, paymentMethod })   => api.post('/orders', { addressId, paymentMethod }),
+  placeOrder:   ({ addressId, paymentMethod, buyNowItem }) => api.post('/orders', { addressId, paymentMethod, buyNowItem }),
   getOrderById: (id)                             => api.get(`/orders/${id}`),
 };
 

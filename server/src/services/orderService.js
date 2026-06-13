@@ -78,7 +78,7 @@ async function resolveUser(publicId, client) {
 }
 
 // ─── Service functions ────────────────────────────────────────────────────────
-async function placeOrder(userPublicId, addressPublicId, paymentMethod) {
+async function placeOrder(userPublicId, addressPublicId, paymentMethod, buyNowItem) {
   const userId = await resolveUser(userPublicId);
 
   const client = await pool.connect();
@@ -99,43 +99,78 @@ async function placeOrder(userPublicId, addressPublicId, paymentMethod) {
       throw new AppError('Forbidden', 403, 'FORBIDDEN');
     }
 
-    // ── Step 2: Fetch cart items ──────────────────────────────────────────────
-    const cartRes = await client.query(
-      `SELECT ci.quantity,
-              p.id           AS product_id,
-              p.name         AS product_name,
-              p.brand        AS product_brand,
-              p.mrp,
-              p.selling_price,
-              p.in_stock,
-              pi.url         AS product_image
-       FROM   cart_items ci
-       JOIN   products p ON p.id = ci.product_id
-       LEFT JOIN product_images pi
-         ON   pi.product_id = p.id AND pi.display_order = 0
-       WHERE  ci.user_id = $1`,
-      [userId]
-    );
+    let orderItems;
 
-    if (!cartRes.rows.length) {
-      throw new AppError('Cart is empty', 400, 'CART_EMPTY');
-    }
+    if (buyNowItem && buyNowItem.productId) {
+      // ── Buy Now: look up product directly by public_id ──────────────────────
+      const prodRes = await client.query(
+        `SELECT p.id AS product_id,
+                p.name         AS product_name,
+                p.brand        AS product_brand,
+                p.mrp,
+                p.selling_price,
+                p.in_stock,
+                pi.url         AS product_image
+         FROM   products p
+         LEFT JOIN product_images pi
+           ON   pi.product_id = p.id AND pi.display_order = 0
+         WHERE  p.public_id = $1`,
+        [buyNowItem.productId]
+      );
 
-    const outOfStock = cartRes.rows.filter((r) => !r.in_stock);
-    if (outOfStock.length) {
-      const names = outOfStock.map((r) => r.product_name).join(', ');
-      throw new AppError(`Out of stock: ${names}`, 400, 'OUT_OF_STOCK');
+      if (!prodRes.rows.length) {
+        throw new AppError('Product not found', 404, 'NOT_FOUND');
+      }
+      const prod = prodRes.rows[0];
+      if (!prod.in_stock) {
+        throw new AppError(`Out of stock: ${prod.product_name}`, 400, 'OUT_OF_STOCK');
+      }
+
+      orderItems = [{
+        ...prod,
+        quantity: Math.max(1, parseInt(buyNowItem.quantity) || 1),
+      }];
+    } else {
+      // ── Cart flow: fetch cart items ─────────────────────────────────────────
+      const cartRes = await client.query(
+        `SELECT ci.quantity,
+                p.id           AS product_id,
+                p.name         AS product_name,
+                p.brand        AS product_brand,
+                p.mrp,
+                p.selling_price,
+                p.in_stock,
+                pi.url         AS product_image
+         FROM   cart_items ci
+         JOIN   products p ON p.id = ci.product_id
+         LEFT JOIN product_images pi
+           ON   pi.product_id = p.id AND pi.display_order = 0
+         WHERE  ci.user_id = $1`,
+        [userId]
+      );
+
+      if (!cartRes.rows.length) {
+        throw new AppError('Cart is empty', 400, 'CART_EMPTY');
+      }
+
+      const outOfStock = cartRes.rows.filter((r) => !r.in_stock);
+      if (outOfStock.length) {
+        const names = outOfStock.map((r) => r.product_name).join(', ');
+        throw new AppError(`Out of stock: ${names}`, 400, 'OUT_OF_STOCK');
+      }
+
+      orderItems = cartRes.rows;
     }
 
     // ── Step 3: Calculate totals ──────────────────────────────────────────────
     let subtotal      = 0;
     let discountTotal = 0;
-    for (const item of cartRes.rows) {
+    for (const item of orderItems) {
       subtotal      += Number(item.selling_price) * item.quantity;
       discountTotal += (Number(item.mrp) - Number(item.selling_price)) * item.quantity;
     }
     const deliveryFee = 0;
-    const totalAmount = subtotal;           // free delivery
+    const totalAmount = subtotal;
 
     // ── Step 4: Order number ──────────────────────────────────────────────────
     const cntRes = await client.query('SELECT COUNT(*) + 1 AS next_num FROM orders', []);
@@ -172,7 +207,7 @@ async function placeOrder(userPublicId, addressPublicId, paymentMethod) {
 
     // ── Step 6: Insert order items ────────────────────────────────────────────
     const insertedItems = [];
-    for (const item of cartRes.rows) {
+    for (const item of orderItems) {
       const iRes = await client.query(
         `INSERT INTO order_items
            (order_id, product_id, product_name, product_image,
@@ -190,8 +225,10 @@ async function placeOrder(userPublicId, addressPublicId, paymentMethod) {
       insertedItems.push(serializeItem(iRes.rows[0]));
     }
 
-    // ── Step 7: Clear cart ────────────────────────────────────────────────────
-    await client.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
+    // ── Step 7: Clear cart (only for cart-based orders) ───────────────────────
+    if (!buyNowItem) {
+      await client.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
+    }
 
     await client.query('COMMIT');
 

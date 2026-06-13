@@ -21,13 +21,18 @@ export default function PaymentStep({ priceDetails }) {
   const navigate    = useNavigate();
   const paymentMethod     = useSelector((s) => s.checkout.paymentMethod);
   const selectedAddressId = useSelector((s) => s.checkout.selectedAddressId);
+  const buyNowItem        = useSelector((s) => s.checkout.buyNowItem);
   const [placing, setPlacing] = useState(false);
 
   async function handlePlaceOrder() {
     if (!selectedAddressId) { toast.error('No delivery address selected'); return; }
     setPlacing(true);
     try {
-      const r = await orderService.placeOrder({ addressId: selectedAddressId, paymentMethod });
+      const payload = { addressId: selectedAddressId, paymentMethod };
+      if (buyNowItem) {
+        payload.buyNowItem = { productId: buyNowItem.product.id, quantity: buyNowItem.quantity };
+      }
+      const r = await orderService.placeOrder(payload);
       const order = r.data;
       dispatch(clearCartState());
       dispatch(resetCheckout());
@@ -70,7 +75,7 @@ export default function PaymentStep({ priceDetails }) {
         {paymentMethod === 'UPI' && (
           <div style={{ marginTop: 16 }}>
             <div className={styles.qrBox}>
-              <div style={{ fontSize: 32 }}>▦</div>
+              <div style={{ fontSize: 32 }}>&#9638;</div>
               <span>Scan QR to pay</span>
             </div>
             <p style={{ fontSize: 12, color: 'var(--fk-text-secondary)' }}>
@@ -83,7 +88,7 @@ export default function PaymentStep({ priceDetails }) {
         {/* COD: confirmation */}
         {paymentMethod === 'COD' && (
           <div className={styles.codInfo}>
-            💵 You will pay <strong>{inr(priceDetails?.totalAmount)}</strong> in cash when your order arrives at your doorstep.
+            You will pay <strong>{inr(priceDetails?.totalAmount)}</strong> in cash when your order arrives at your doorstep.
           </div>
         )}
 

@@ -7,8 +7,8 @@ const SORT_MAP = {
   rating_desc:    'p.rating DESC, p.review_count DESC',
   price_asc:      'p.selling_price ASC',
   price_desc:     'p.selling_price DESC',
-  newest:         'p.created_at DESC',
-  created_at_desc:'p.created_at DESC',
+  newest:         'p.id DESC',
+  created_at_desc:'p.id DESC',
   discount:       'p.discount_pct DESC',
   discount_desc:  'p.discount_pct DESC',
 };

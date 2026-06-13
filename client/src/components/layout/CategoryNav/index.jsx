@@ -2,133 +2,131 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import styles from './CategoryNav.module.css';
 
-const CDN = 'https://static-assets-web.flixcart.com/apex-static/images/svgs/L1Nav';
-
 const NAV_ITEMS = [
   {
-    label: 'For You', icon: 'all', slug: null,
+    label: 'For You', emoji: '🏠', slug: null,
     sub: [],
   },
   {
-    label: 'Fashion', icon: 'fashion', slug: 'fashion',
+    label: 'Fashion', emoji: '👗', slug: 'fashion',
     sub: [
-      { label: "Men's Clothing", slug: 'fashion' },
-      { label: "Women's Clothing", slug: 'fashion' },
-      { label: 'Footwear', slug: 'fashion' },
-      { label: 'Accessories', slug: 'fashion' },
-      { label: 'Kids Fashion', slug: 'fashion' },
-      { label: 'Innerwear', slug: 'fashion' },
+      { label: "Men's Clothing", search: "men's clothing" },
+      { label: "Women's Clothing", search: "women's clothing" },
+      { label: 'Footwear', search: 'footwear' },
+      { label: 'Accessories', search: 'accessories' },
+      { label: 'Kids Fashion', search: 'kids' },
+      { label: 'Innerwear', search: 'innerwear' },
     ],
   },
   {
-    label: 'Mobiles', icon: 'mobiles', slug: 'mobiles',
+    label: 'Mobiles', emoji: '📱', slug: 'mobiles',
     sub: [
-      { label: 'Smartphones', slug: 'mobiles' },
-      { label: 'Feature Phones', slug: 'mobiles' },
-      { label: 'Mobile Accessories', slug: 'mobiles' },
-      { label: 'Tablets', slug: 'mobiles' },
-      { label: 'Smart Watches', slug: 'electronics' },
+      { label: 'Smartphones', search: 'smartphone' },
+      { label: 'Feature Phones', search: 'feature phone' },
+      { label: 'Mobile Accessories', search: 'mobile accessories' },
+      { label: 'Tablets', search: 'tablet' },
+      { label: 'Smart Watches', search: 'smart watch' },
     ],
   },
   {
-    label: 'Beauty', icon: 'beauty', slug: 'beauty',
+    label: 'Beauty', emoji: '💄', slug: 'beauty',
     sub: [
-      { label: 'Skincare', slug: 'beauty' },
-      { label: 'Haircare', slug: 'beauty' },
-      { label: 'Fragrances', slug: 'beauty' },
-      { label: 'Makeup', slug: 'beauty' },
-      { label: 'Men Grooming', slug: 'beauty' },
+      { label: 'Skincare', search: 'skincare' },
+      { label: 'Haircare', search: 'haircare' },
+      { label: 'Fragrances', search: 'fragrance' },
+      { label: 'Makeup', search: 'makeup' },
+      { label: 'Men Grooming', search: 'grooming' },
     ],
   },
   {
-    label: 'Electronics', icon: 'electronics', slug: 'electronics',
+    label: 'Electronics', emoji: '💻', slug: 'electronics',
     sub: [
-      { label: 'Laptops', slug: 'electronics' },
-      { label: 'Headphones', slug: 'electronics' },
-      { label: 'Cameras', slug: 'electronics' },
-      { label: 'Smart Speakers', slug: 'electronics' },
-      { label: 'Accessories', slug: 'electronics' },
+      { label: 'Laptops', search: 'laptop' },
+      { label: 'Headphones', search: 'headphone' },
+      { label: 'Cameras', search: 'camera' },
+      { label: 'Smart Speakers', search: 'speaker' },
+      { label: 'Accessories', search: 'accessories' },
     ],
   },
   {
-    label: 'Home', icon: 'home-final', slug: 'home-kitchen',
+    label: 'Home', emoji: '🏡', slug: 'home-kitchen',
     sub: [
-      { label: 'Bedding', slug: 'home-kitchen' },
-      { label: 'Kitchen Tools', slug: 'home-kitchen' },
-      { label: 'Decor', slug: 'home-kitchen' },
-      { label: 'Storage', slug: 'home-kitchen' },
-      { label: 'Lighting', slug: 'home-kitchen' },
+      { label: 'Bedding', search: 'bedding' },
+      { label: 'Kitchen Tools', search: 'kitchen' },
+      { label: 'Decor', search: 'decor' },
+      { label: 'Storage', search: 'storage' },
+      { label: 'Lighting', search: 'lighting' },
     ],
   },
   {
-    label: 'Appliances', icon: 'tv', slug: 'appliances',
+    label: 'Appliances', emoji: '📺', slug: 'appliances',
     sub: [
-      { label: 'TVs', slug: 'appliances' },
-      { label: 'Refrigerators', slug: 'appliances' },
-      { label: 'Washing Machines', slug: 'appliances' },
-      { label: 'Air Conditioners', slug: 'appliances' },
-      { label: 'Microwave Ovens', slug: 'appliances' },
+      { label: 'TVs', search: 'tv' },
+      { label: 'Refrigerators', search: 'refrigerator' },
+      { label: 'Washing Machines', search: 'washing machine' },
+      { label: 'Air Conditioners', search: 'air conditioner' },
+      { label: 'Microwave Ovens', search: 'microwave' },
     ],
   },
   {
-    label: 'Toys, baby..', icon: 'toy', slug: 'toys',
+    label: 'Toys, baby..', emoji: '🧸', slug: 'toys',
     sub: [
-      { label: 'Toys', slug: 'toys' },
-      { label: 'Baby Gear', slug: 'toys' },
-      { label: 'Baby Clothing', slug: 'toys' },
-      { label: 'Stationery', slug: 'toys' },
+      { label: 'Toys', search: 'toy' },
+      { label: 'Baby Gear', search: 'baby' },
+      { label: 'Baby Clothing', search: 'baby clothing' },
+      { label: 'Stationery', search: 'stationery' },
     ],
   },
   {
-    label: 'Food & Health', icon: 'food', slug: 'food',
+    label: 'Food & Health', emoji: '🥗', slug: 'food',
     sub: [
-      { label: 'Nutrition', slug: 'food' },
-      { label: 'Organic Food', slug: 'food' },
-      { label: 'Health Devices', slug: 'food' },
-      { label: 'Ayurveda', slug: 'food' },
+      { label: 'Nutrition', search: 'nutrition' },
+      { label: 'Organic Food', search: 'organic' },
+      { label: 'Health Devices', search: 'health' },
+      { label: 'Ayurveda', search: 'ayurveda' },
     ],
   },
   {
-    label: 'Auto Accessories', icon: 'auto-acc', slug: 'auto',
+    label: 'Auto Accessories', emoji: '🚗', slug: 'auto',
     sub: [
-      { label: 'Car Accessories', slug: 'auto' },
-      { label: 'Bike Accessories', slug: 'auto' },
-      { label: 'Car Care', slug: 'auto' },
+      { label: 'Car Accessories', search: 'car accessories' },
+      { label: 'Bike Accessories', search: 'bike accessories' },
+      { label: 'Car Care', search: 'car care' },
     ],
   },
   {
-    label: '2 Wheelers', icon: 'auto-new', slug: '2-wheelers',
+    label: '2 Wheelers', emoji: '🏍️', slug: '2-wheelers',
     sub: [
-      { label: 'Bikes', slug: '2-wheelers' },
-      { label: 'Scooters', slug: '2-wheelers' },
-      { label: 'Electric Vehicles', slug: '2-wheelers' },
+      { label: 'Bikes', search: 'bike' },
+      { label: 'Scooters', search: 'scooter' },
+      { label: 'Electric Vehicles', search: 'electric' },
     ],
   },
   {
-    label: 'Sports & Fitness', icon: 'sport', slug: 'sports',
+    label: 'Sports & Fitness', emoji: '⚽', slug: 'sports',
     sub: [
-      { label: 'Exercise Equipment', slug: 'sports' },
-      { label: 'Outdoor Sports', slug: 'sports' },
-      { label: 'Team Sports', slug: 'sports' },
-      { label: 'Sportswear', slug: 'sports' },
+      { label: 'Exercise Equipment', search: 'exercise' },
+      { label: 'Outdoor Sports', search: 'outdoor' },
+      { label: 'Team Sports', search: 'team sports' },
+      { label: 'Sportswear', search: 'sportswear' },
     ],
   },
   {
-    label: 'Books & Media', icon: 'books', slug: 'books',
+    label: 'Books & Media', emoji: '📚', slug: 'books',
     sub: [
-      { label: 'Books', slug: 'books' },
-      { label: 'eBooks', slug: 'books' },
-      { label: 'Music', slug: 'books' },
-      { label: 'Movies', slug: 'books' },
+      { label: 'Books', search: 'book' },
+      { label: 'eBooks', search: 'ebook' },
+      { label: 'Music', search: 'music' },
+      { label: 'Movies', search: 'movie' },
     ],
   },
   {
-    label: 'Furniture', icon: 'furniture', slug: 'furniture',
+    label: 'Furniture', emoji: '🛋️', slug: 'furniture',
     sub: [
-      { label: 'Sofas', slug: 'furniture' },
-      { label: 'Beds & Mattresses', slug: 'furniture' },
-      { label: 'Study Tables', slug: 'furniture' },
-      { label: 'Wardrobes', slug: 'furniture' },
+      { label: 'Sofas', search: 'sofa' },
+      { label: 'Beds & Mattresses', search: 'bed' },
+      { label: 'Study Tables', search: 'table' },
+      { label: 'Wardrobes', search: 'wardrobe' },
     ],
   },
 ];
@@ -153,6 +151,14 @@ export default function CategoryNav() {
     } else {
       navigate(`/products?category=${slug}`);
     }
+  }
+
+  function handleSubClick(parentSlug, searchTerm) {
+    setHoveredIdx(null);
+    const params = new URLSearchParams();
+    if (parentSlug) params.set('category', parentSlug);
+    if (searchTerm) params.set('search', searchTerm);
+    navigate(`/products?${params.toString()}`);
   }
 
   function handleMouseEnter(idx) {
@@ -185,12 +191,7 @@ export default function CategoryNav() {
                 className={`${styles.item} ${isActive ? styles.itemActive : ''}`}
               >
                 <div className={`${styles.iconWrap} ${isActive ? styles.iconWrapActive : ''}`}>
-                  <img
-                    src={`${CDN}/${item.icon}.svg`}
-                    alt={item.label}
-                    className={styles.icon}
-                    loading="lazy"
-                  />
+                  <span className={styles.iconEmoji}>{item.emoji}</span>
                 </div>
                 <span className={styles.label}>{item.label}</span>
                 {isActive && <span className={styles.activeLine} />}
@@ -208,17 +209,13 @@ export default function CategoryNav() {
           onMouseLeave={handleMouseLeave}
         >
           <div className={styles.megaInner}>
-            <p className={styles.megaTitle}>{hoveredItem.label}</p>
+            <p className={styles.megaTitle}>{hoveredItem.emoji} {hoveredItem.label}</p>
             <div className={styles.megaGrid}>
               {hoveredItem.sub.map((sub) => (
                 <button
                   key={sub.label}
                   className={styles.megaItem}
-                  onClick={() => {
-                    setHoveredIdx(null);
-                    if (isHome) navigate(`/?category=${sub.slug}`);
-                    else navigate(`/products?category=${sub.slug}`);
-                  }}
+                  onClick={() => handleSubClick(hoveredItem.slug, sub.search)}
                 >
                   {sub.label}
                 </button>
