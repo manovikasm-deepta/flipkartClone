@@ -8,6 +8,9 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
+env:
+  VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
+
 jobs:
   deploy:
     name: Deploy → Vercel
@@ -17,59 +20,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      # Resolve org ID from token (avoids needing VERCEL_ORG_ID as a secret)
-      - name: Resolve Vercel org ID
-        id: org
-        run: |
-          ORG_ID=$(curl -s https://api.vercel.com/v2/user \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-            | python3 -c "import sys,json; print(json.load(sys.stdin)['user']['id'])")
-          echo "id=$ORG_ID" >> $GITHUB_OUTPUT
-
-      # Push Gmail + runtime env vars into the Vercel project so they're
-      # available to the serverless function at runtime
-      - name: Set Vercel environment variables
+      # Push runtime env vars into the Vercel project via REST API
+      # (project ID only — no org ID required)
+      - name: Configure Vercel environment variables
         run: |
           PROJECT="prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv"
           TOKEN="${{ secrets.VERCEL_TOKEN }}"
 
-          set_env() {
+          push_env() {
             curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT/env?upsert=true" \
               -H "Authorization: Bearer $TOKEN" \
               -H "Content-Type: application/json" \
-              -d "{\"key\":\"$1\",\"value\":\"$2\",\"type\":\"encrypted\",\"target\":[\"production\"]}" > /dev/null
+              -d "{\"key\":\"$1\",\"value\":\"$2\",\"type\":\"encrypted\",\"target\":[\"production\"]}"
           }
 
-          set_env "NODE_ENV"    "production"
-          set_env "GMAIL_USER"  "mukkerlamanovikas@gmail.com"
-          set_env "GMAIL_PASS"  "xhihqvmjbxcdwcga"
-          set_env "DATABASE_URL" "${{ secrets.DATABASE_URL }}"
-          set_env "JWT_SECRET"   "${{ secrets.JWT_SECRET }}"
+          push_env "NODE_ENV"    "production"
+          push_env "GMAIL_USER"  "mukkerlamanovikas@gmail.com"
+          push_env "GMAIL_PASS"  "xhihqvmjbxcdwcga"
+          push_env "DATABASE_URL" "${{ secrets.DATABASE_URL }}"
+          push_env "JWT_SECRET"   "${{ secrets.JWT_SECRET }}"
 
-      - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
-          VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
-
-      - name: Build
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
-          VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
-
+      # Source deployment — Vercel builds on their servers using vercel.json
       - name: Deploy to production
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID:     ${{ steps.org.outputs.id }}
-          VERCEL_PROJECT_ID: prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
 
   seed-db:
     name: Seed Production DB
