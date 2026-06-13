@@ -59,6 +59,9 @@
   box-shadow: var(--fk-shadow-sm);
   padding: 60px 24px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .emptyIcon { color: #bdbdbd; margin-bottom: 16px; }

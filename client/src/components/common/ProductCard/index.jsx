@@ -9,7 +9,7 @@ import styles                from './ProductCard.module.css';
 const inr = (n) =>
   Number(n).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
 
-export default function ProductCard({ product, showWishlist = true }) {
+export default function ProductCard({ product, showWishlist = true, cardStyle }) {
   const dispatch     = useDispatch();
   const navigate     = useNavigate();
   const { isLoggedIn } = useAuth();
@@ -32,7 +32,7 @@ export default function ProductCard({ product, showWishlist = true }) {
     : null;
 
   return (
-    <Link to={`/product/${product.id}`} className={styles.card}>
+    <Link to={`/product/${product.id}`} className={styles.card} style={cardStyle}>
       {/* ── Image ──────────────────────────────────── */}
       <div className={styles.imageWrap}>
         <img
@@ -85,12 +85,12 @@ export default function ProductCard({ product, showWishlist = true }) {
         <h3 className={styles.name}>{product.name}</h3>
 
         <div className={styles.priceRow}>
+          {hasDiscount && (
+            <span className={styles.mrp}>{inr(product.mrp)}</span>
+          )}
           <span className={styles.sellingPrice}>{inr(product.sellingPrice)}</span>
           {hasDiscount && (
-            <>
-              <span className={styles.mrp}>{inr(product.mrp)}</span>
-              <span className={styles.discount}>{Math.round(product.discountPct)}% off</span>
-            </>
+            <span className={styles.discount}>{Math.round(product.discountPct)}% off</span>
           )}
         </div>
 

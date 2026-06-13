@@ -154,11 +154,9 @@ export default function ProductListingPage() {
             />
 
             {loading ? (
-              <div className={styles.grid} style={{ padding: 0 }}>
+              <div className={styles.grid}>
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} style={{ background: '#fff', padding: 12 }}>
-                    <SkeletonLoader variant="card" count={1} />
-                  </div>
+                  <SkeletonLoader key={i} variant="card" count={1} />
                 ))}
               </div>
             ) : products.length === 0 ? (
@@ -172,9 +170,7 @@ export default function ProductListingPage() {
               <>
                 <div className={styles.grid}>
                   {products.map((p) => (
-                    <div key={p.id} style={{ background: '#fff' }}>
-                      <ProductCard product={p} />
-                    </div>
+                    <ProductCard key={p.id} product={p} />
                   ))}
                 </div>
 

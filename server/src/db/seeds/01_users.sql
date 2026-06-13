@@ -3,7 +3,7 @@ INSERT INTO users (name, email, password_hash, phone, is_default)
 VALUES (
   'Demo User',
   'demo@flipkart.com',
-  '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6hsxq9JLiq',
+  '$2a$12$WPynz/OWZY4Mg9sIaGRObOquE42jecdAKgsd54U/zBNXWRA5AUYNO',
   '9876543210',
   TRUE
 )

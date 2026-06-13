@@ -1,5 +1,5 @@
 .page {
-  background: var(--fk-page-bg);
+  background: #fff;
   min-height: 100vh;
 }
 
@@ -36,15 +36,15 @@
 }
 
 .imageSection {
-  width: 420px;
-  flex-shrink: 0;
+  flex: 5;
+  min-width: 0;
   position: sticky;
   top: 132px;
 }
 
 .infoSection {
-  flex: 1;
-  min-width: 0;
+  flex: 4;
+  min-width: 320px;
   background: #fff;
   border-radius: 4px;
   box-shadow: var(--fk-shadow-sm);
@@ -136,7 +136,7 @@
 }
 
 .cartBtn {
-  flex: 1;
+  width: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,18 +146,19 @@
   color: #fff;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: opacity 0.15s;
+  white-space: nowrap;
 }
 .cartBtn:hover:not(:disabled) { opacity: 0.9; }
 .cartBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .buyBtn {
-  flex: 1;
+  width: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,12 +168,13 @@
   color: #fff;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: opacity 0.15s;
+  white-space: nowrap;
 }
 .buyBtn:hover:not(:disabled) { opacity: 0.9; }
 .buyBtn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -293,7 +295,8 @@
 /* ── Responsive ─────────────────────────────────────── */
 @media (max-width: 900px) {
   .layout { flex-direction: column; }
-  .imageSection { width: 100%; max-width: 100%; position: static; }
+  .imageSection { flex: none; width: 100%; position: static; }
+  .infoSection { min-width: 0; width: 100%; }
 }
 
 @media (max-width: 600px) {

@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '@/components/common/ProductCard';
 
-const CARD_WIDTH = 190;
+const CARD_WIDTH = 228;
 const SCROLL_AMOUNT = CARD_WIDTH * 4;
 
-export default function HorizontalScrollSection({ title = 'You May Also Like', products = [], viewAllHref = '/products' }) {
+export default function HorizontalScrollSection({ title = 'You May Also Like', products = [], viewAllHref = '/products', color = '#2874f0' }) {
   const scrollRef = useRef(null);
 
   if (!products.length) return null;
+
+  const cardBg     = `${color}22`;
+  const cardBorder = `${color}55`;
 
   function slide(dir) {
     if (scrollRef.current) {
@@ -17,47 +20,40 @@ export default function HorizontalScrollSection({ title = 'You May Also Like', p
     }
   }
 
+  const btnStyle = {
+    width: 28, height: 28,
+    border: '1px solid #e0e0e0',
+    borderRadius: '50%',
+    background: '#fff',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  };
+
   return (
-    <div style={{
-      background: '#fff',
-      borderRadius: 4,
-      boxShadow: 'var(--fk-shadow-sm)',
-      overflow: 'hidden',
-    }}>
-      {/* Header */}
+    <div style={{ background: '#fff', borderRadius: 4, border: '1px solid #f0f0f0', overflow: 'hidden' }}>
+      {/* Header — arrows in header, not floating on sides */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '12px 16px',
-        borderBottom: '1px solid var(--fk-border-light)',
+        borderBottom: '1px solid #f0f0f0',
       }}>
-        <h2 style={{ fontWeight: 700, fontSize: 20, color: 'var(--fk-text-primary)', margin: 0 }}>
+        <h2 style={{ fontWeight: 700, fontSize: 20, color: '#212121', margin: 0 }}>
           {title}
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Link to={viewAllHref} style={{ fontSize: 13, color: 'var(--fk-blue)', fontWeight: 600, textDecoration: 'none' }}>
-            View All →
+          <Link to={viewAllHref} style={{ fontSize: 13, color: '#2874f0', fontWeight: 700, textDecoration: 'none' }}>
+            VIEW ALL →
           </Link>
-          <button
-            onClick={() => slide(-1)}
-            style={{
-              width: 32, height: 32, border: '1px solid var(--fk-border)', borderRadius: 50,
-              background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-            aria-label="Scroll left"
-          >
-            <ChevronLeft size={16} />
+          <button onClick={() => slide(-1)} style={btnStyle} aria-label="Scroll left">
+            <ChevronLeft size={14} />
           </button>
-          <button
-            onClick={() => slide(1)}
-            style={{
-              width: 32, height: 32, border: '1px solid var(--fk-border)', borderRadius: 50,
-              background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-            aria-label="Scroll right"
-          >
-            <ChevronRight size={16} />
+          <button onClick={() => slide(1)} style={btnStyle} aria-label="Scroll right">
+            <ChevronRight size={14} />
           </button>
         </div>
       </div>
@@ -70,21 +66,16 @@ export default function HorizontalScrollSection({ title = 'You May Also Like', p
           overflowX: 'auto',
           scrollSnapType: 'x mandatory',
           scrollbarWidth: 'none',
-          gap: 1,
-          background: 'var(--fk-border-light)',
+          gap: 12,
+          padding: '12px 16px',
         }}
       >
         {products.map((p) => (
           <div
             key={p.id}
-            style={{
-              width: CARD_WIDTH,
-              flexShrink: 0,
-              scrollSnapAlign: 'start',
-              background: '#fff',
-            }}
+            style={{ width: CARD_WIDTH, flexShrink: 0, scrollSnapAlign: 'start' }}
           >
-            <ProductCard product={p} />
+            <ProductCard product={p} cardStyle={{ background: cardBg, border: `1px solid ${cardBorder}` }} />
           </div>
         ))}
       </div>

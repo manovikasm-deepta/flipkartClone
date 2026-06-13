@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 
-import { initializeAuth, fetchMe } from '@/store/slices/authSlice';
+import { initializeAuth, fetchMe, setHydrated } from '@/store/slices/authSlice';
 import { fetchCart } from '@/store/slices/cartSlice';
 import { fetchWishlistIds } from '@/store/slices/wishlistSlice';
 import { useAuth } from '@/hooks/useAuth';
@@ -33,15 +33,21 @@ function Layout() {
 
   useEffect(() => {
     const storedToken = localStorage.getItem('fk_token');
-    if (!storedToken) {
+    const didLogout   = sessionStorage.getItem('fk_did_logout');
+
+    if (storedToken) {
+      dispatch(fetchMe());
+      dispatch(fetchCart());
+      dispatch(fetchWishlistIds());
+    } else if (!didLogout) {
+      // First visit with no token → auto-login as demo user
       dispatch(initializeAuth()).then(() => {
         dispatch(fetchCart());
         dispatch(fetchWishlistIds());
       });
     } else {
-      dispatch(fetchMe());
-      dispatch(fetchCart());
-      dispatch(fetchWishlistIds());
+      // Explicit logout — stay logged out, just mark hydrated
+      dispatch(setHydrated());
     }
   }, [dispatch]);
 

@@ -23,10 +23,15 @@ export default function PaymentStep({ priceDetails }) {
   const selectedAddressId  = useSelector((s) => s.checkout.selectedAddressId);
   const buyNowItem         = useSelector((s) => s.checkout.buyNowItem);
   const confirmationEmail  = useSelector((s) => s.checkout.confirmationEmail);
+  const cartItems          = useSelector((s) => s.cart.items);
   const [placing, setPlacing] = useState(false);
 
   async function handlePlaceOrder() {
     if (!selectedAddressId) { toast.error('No delivery address selected'); return; }
+    if (!buyNowItem && cartItems.length === 0) {
+      toast.error('Your cart is empty. Please add items before placing an order.');
+      return;
+    }
     setPlacing(true);
     try {
       const payload = { addressId: selectedAddressId, paymentMethod, confirmationEmail };
@@ -41,7 +46,7 @@ export default function PaymentStep({ priceDetails }) {
       }
       const r = await orderService.placeOrder(payload);
       const order = r.data;
-      dispatch(clearCartState());
+      if (!buyNowItem) dispatch(clearCartState());
       dispatch(resetCheckout());
       navigate(`/order-confirmation/${order.id}`);
     } catch (err) {

@@ -1,9 +1,8 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { Autoplay, Pagination } from 'swiper/modules';
 import { Link } from 'react-router-dom';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 
 const SLIDES = [
   {
@@ -85,7 +84,7 @@ const SLIDES = [
 
 export default function HeroBanner() {
   return (
-    <div style={{ overflow: 'hidden', lineHeight: 0 }}>
+    <div>
       <style>{`
         .hero-swiper .swiper-pagination-bullet {
           background: rgba(0,0,0,0.25); opacity: 1; width: 7px; height: 7px;
@@ -93,34 +92,44 @@ export default function HeroBanner() {
         .hero-swiper .swiper-pagination-bullet-active {
           background: #2874f0; width: 18px; border-radius: 4px;
         }
-        .hero-swiper .swiper-button-next,
-        .hero-swiper .swiper-button-prev {
-          color: rgba(0,0,0,0.35); transform: scale(0.65);
+        .hero-swiper .swiper-pagination {
+          bottom: 10px;
         }
-        .hero-swiper .swiper-button-next:hover,
-        .hero-swiper .swiper-button-prev:hover { color: #2874f0; }
       `}</style>
       <Swiper
         className="hero-swiper"
-        style={{ overflow: 'hidden' }}
-        modules={[Autoplay, Pagination, Navigation]}
+        style={{ background: '#fff' }}
+        modules={[Autoplay, Pagination]}
         autoplay={{ delay: 3500, disableOnInteraction: false }}
         pagination={{ clickable: true }}
-        navigation
         loop
         speed={500}
       >
         {SLIDES.map((slide) => (
           <SwiperSlide key={slide.id}>
+            {/* Outer: page background — no colour bleeds to the sides */}
             <div style={{
-              background: slide.gradient,
+              background: '#fff',
               height: 280,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              position: 'relative',
-              overflow: 'hidden',
             }}>
+              {/* Inner: gradient confined to content width */}
+              <div style={{
+                width: '100%',
+                maxWidth: 1280,
+                height: '100%',
+                background: slide.gradient,
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 40px',
+                boxSizing: 'border-box',
+                borderRadius: 4,
+              }}>
               {/* decorative circles */}
               <div style={{
                 position: 'absolute', right: -60, top: -60,
@@ -136,20 +145,6 @@ export default function HeroBanner() {
                 background: 'rgba(255,255,255,0.15)',
                 pointerEvents: 'none',
               }} />
-
-              {/* inner constrained to max-width */}
-              <div style={{
-                width: '100%',
-                maxWidth: 1280,
-                padding: '0 52px',
-                boxSizing: 'border-box',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                position: 'relative',
-                zIndex: 2,
-                height: '100%',
-              }}>
                 {/* Left — text */}
                 <div style={{ flex: '0 0 auto', maxWidth: 380 }}>
                   <span style={{

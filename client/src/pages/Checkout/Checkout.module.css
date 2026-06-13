@@ -14,7 +14,12 @@
   background: var(--fk-blue);
   border-radius: 0 0 4px 4px;
   margin-bottom: 16px;
-  padding: 0 24px;
+}
+
+.stepBarInner {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 16px;
   display: flex;
   align-items: stretch;
 }

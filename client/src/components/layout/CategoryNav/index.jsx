@@ -12,32 +12,32 @@ const NAV_ITEMS = [
   {
     label: 'Fashion', icon: FK_SVG('fashion'), slug: 'fashion',
     sub: [
-      { label: "Men's Clothing", search: "men's clothing" },
-      { label: "Women's Clothing", search: "women's clothing" },
-      { label: 'Footwear', search: 'footwear' },
-      { label: 'Accessories', search: 'accessories' },
-      { label: 'Kids Fashion', search: 'kids' },
-      { label: 'Innerwear', search: 'innerwear' },
+      { label: "Men's Clothing", search: 'men' },
+      { label: "Women's Clothing", search: 'women' },
+      { label: 'Footwear', search: 'shoes' },
+      { label: 'Accessories', search: null },
+      { label: 'Kids Fashion', search: null },
+      { label: 'Innerwear', search: null },
     ],
   },
   {
     label: 'Mobiles', icon: FK_SVG('mobiles'), slug: 'mobiles',
     sub: [
-      { label: 'Smartphones', search: 'smartphone' },
-      { label: 'Feature Phones', search: 'feature phone' },
-      { label: 'Mobile Accessories', search: 'mobile accessories' },
-      { label: 'Tablets', search: 'tablet' },
-      { label: 'Smart Watches', search: 'smart watch' },
+      { label: 'Smartphones', search: null },
+      { label: 'Feature Phones', search: null },
+      { label: 'Mobile Accessories', search: null },
+      { label: 'Tablets', search: null },
+      { label: 'Smart Watches', search: null },
     ],
   },
   {
     label: 'Beauty', icon: FK_SVG('beauty'), slug: 'beauty',
     sub: [
-      { label: 'Skincare', search: 'skincare' },
-      { label: 'Haircare', search: 'haircare' },
-      { label: 'Fragrances', search: 'fragrance' },
-      { label: 'Makeup', search: 'makeup' },
-      { label: 'Men Grooming', search: 'grooming' },
+      { label: 'Skincare', search: 'face' },
+      { label: 'Haircare', search: 'shampoo' },
+      { label: 'Fragrances', search: null },
+      { label: 'Makeup', search: 'lip' },
+      { label: 'Men Grooming', search: null },
     ],
   },
   {
@@ -47,44 +47,44 @@ const NAV_ITEMS = [
       { label: 'Headphones', search: 'headphone' },
       { label: 'Cameras', search: 'camera' },
       { label: 'Smart Speakers', search: 'speaker' },
-      { label: 'Accessories', search: 'accessories' },
+      { label: 'Accessories', search: null },
     ],
   },
   {
     label: 'Home', icon: FK_SVG('home'), slug: 'home-furniture',
     sub: [
-      { label: 'Bedding', search: 'bedding' },
+      { label: 'Bedding', search: 'mattress' },
       { label: 'Kitchen Tools', search: 'kitchen' },
-      { label: 'Decor', search: 'decor' },
-      { label: 'Furniture', search: 'furniture' },
-      { label: 'Lighting', search: 'lighting' },
+      { label: 'Decor', search: null },
+      { label: 'Furniture', search: 'table' },
+      { label: 'Lighting', search: null },
     ],
   },
   {
     label: 'Toys & Baby', icon: FK_SVG('toy'), slug: 'toys',
     sub: [
-      { label: 'Toys', search: 'toy' },
+      { label: 'Toys', search: null },
       { label: 'Baby Gear', search: 'baby' },
-      { label: 'Baby Clothing', search: 'baby clothing' },
-      { label: 'Stationery', search: 'stationery' },
+      { label: 'Baby Clothing', search: 'baby' },
+      { label: 'Stationery', search: null },
     ],
   },
   {
     label: 'Sports', icon: FK_SVG('sport'), slug: 'sports',
     sub: [
-      { label: 'Exercise Equipment', search: 'exercise' },
-      { label: 'Outdoor Sports', search: 'outdoor' },
-      { label: 'Team Sports', search: 'team sports' },
-      { label: 'Sportswear', search: 'sportswear' },
+      { label: 'Exercise Equipment', search: 'gym' },
+      { label: 'Outdoor Sports', search: null },
+      { label: 'Team Sports', search: 'football' },
+      { label: 'Sportswear', search: 'running' },
     ],
   },
   {
     label: 'Books', icon: FK_SVG('books'), slug: 'books',
     sub: [
-      { label: 'Books', search: 'book' },
-      { label: 'eBooks', search: 'ebook' },
-      { label: 'Music', search: 'music' },
-      { label: 'Movies', search: 'movie' },
+      { label: 'Books', search: null },
+      { label: 'eBooks', search: null },
+      { label: 'Music', search: null },
+      { label: 'Movies', search: null },
     ],
   },
 ];
@@ -104,10 +104,8 @@ export default function CategoryNav() {
     setHoveredIdx(null);
     if (!slug) {
       navigate('/');
-    } else if (isHome) {
-      navigate(`/?category=${slug}`);
     } else {
-      navigate(`/products?category=${slug}`);
+      navigate(`/?category=${slug}`);
     }
   }
 

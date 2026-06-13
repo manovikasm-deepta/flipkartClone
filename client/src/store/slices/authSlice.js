@@ -81,6 +81,11 @@ const authSlice = createSlice({
       state.hydrated  = true;
       localStorage.removeItem('fk_token');
       localStorage.removeItem('fk_user');
+      sessionStorage.setItem('fk_did_logout', '1');
+    },
+    setHydrated(state) {
+      state.hydrated = true;
+      state.loading  = false;
     },
     setLoading(state, { payload }) {
       state.loading = payload;
@@ -135,5 +140,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout, setLoading, clearError } = authSlice.actions;
+export const { setCredentials, logout, setLoading, clearError, setHydrated } = authSlice.actions;
 export default authSlice.reducer;

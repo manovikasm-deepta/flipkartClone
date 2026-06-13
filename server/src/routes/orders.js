@@ -14,8 +14,8 @@ router.post(
     body('addressId').notEmpty().withMessage('addressId is required'),
     body('paymentMethod')
       .notEmpty()
-      .isIn(['COD', 'UPI', 'CARD', 'NETBANKING'])
-      .withMessage('paymentMethod must be COD, UPI, CARD or NETBANKING'),
+      .isIn(['COD', 'UPI', 'CARD', 'EMI', 'NETBANKING'])
+      .withMessage('paymentMethod must be COD, UPI, CARD, EMI or NETBANKING'),
   ],
   validate,
   ctrl.placeOrder

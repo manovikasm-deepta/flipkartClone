@@ -30,28 +30,34 @@ function getRecentlyViewed() {
   try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch (e) { return []; }
 }
 
+const ROW_ARROW = {
+  position: 'absolute', top: '50%', transform: 'translateY(-50%)', zIndex: 2,
+  width: 32, height: 32, border: '1px solid #e0e0e0', borderRadius: '50%',
+  background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+};
+
 function HorizontalProductRow({ title, products }) {
   const scrollRef = useRef(null);
   if (!products.length) return null;
-  const CARD = 190;
+  const CARD = 228;
+  const btn = { width: 28, height: 28, border: '1px solid #e0e0e0', borderRadius: '50%', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' };
   return (
     <div style={{ background: '#fff', borderRadius: 4, boxShadow: '0 1px 2px rgba(0,0,0,0.1)', overflow: 'hidden', marginTop: 4 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid #f0f0f0' }}>
         <h2 style={{ fontWeight: 700, fontSize: 20, color: '#212121', margin: 0 }}>{title}</h2>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => scrollRef.current?.scrollBy({ left: -CARD * 3, behavior: 'smooth' })}
-            style={{ width: 30, height: 30, border: '1px solid #e0e0e0', borderRadius: '50%', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ChevronLeft size={15} />
+          <button onClick={() => scrollRef.current?.scrollBy({ left: -CARD * 3, behavior: 'smooth' })} style={btn} aria-label="Scroll left">
+            <ChevronLeft size={14} />
           </button>
-          <button onClick={() => scrollRef.current?.scrollBy({ left: CARD * 3, behavior: 'smooth' })}
-            style={{ width: 30, height: 30, border: '1px solid #e0e0e0', borderRadius: '50%', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ChevronRight size={15} />
+          <button onClick={() => scrollRef.current?.scrollBy({ left: CARD * 3, behavior: 'smooth' })} style={btn} aria-label="Scroll right">
+            <ChevronRight size={14} />
           </button>
         </div>
       </div>
-      <div ref={scrollRef} style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none', gap: 1, background: '#f0f0f0' }}>
+      <div ref={scrollRef} style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none', gap: 12, padding: '12px 16px', background: '#fff' }}>
         {products.map((p) => (
-          <div key={p.id} style={{ width: CARD, flexShrink: 0, background: '#fff' }}>
+          <div key={p.id} style={{ width: CARD, flexShrink: 0 }}>
             <ProductCard product={p} />
           </div>
         ))}

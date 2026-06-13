@@ -34,14 +34,14 @@ export default function ImageGrid({ images = [], thumbnail, productName, isWishl
 
           {/* Vertical thumbnail strip */}
           {allImages.length > 1 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: 68, flexShrink: 0 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: 56, flexShrink: 0 }}>
               {allImages.slice(0, 6).map((img, i) => (
                 <div
                   key={i}
                   onClick={() => setActive(i)}
                   style={{
-                    width: 68,
-                    height: 68,
+                    width: 56,
+                    height: 56,
                     border: active === i ? '2px solid #2874f0' : '2px solid #e0e0e0',
                     borderRadius: 4,
                     display: 'flex',
@@ -72,7 +72,7 @@ export default function ImageGrid({ images = [], thumbnail, productName, isWishl
             onClick={() => setLightbox(true)}
             style={{
               flex: 1,
-              height: 400,
+              height: 520,
               overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',

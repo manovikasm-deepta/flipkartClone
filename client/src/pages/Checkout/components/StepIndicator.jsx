@@ -13,6 +13,7 @@ export default function StepIndicator({ currentStep }) {
 
   return (
     <div className={styles.stepBar}>
+      <div className={styles.stepBarInner}>
       {STEPS.map((s, i) => {
         const isDone   = currentStep > s.num;
         const isActive = currentStep === s.num;
@@ -31,6 +32,7 @@ export default function StepIndicator({ currentStep }) {
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

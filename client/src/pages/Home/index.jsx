@@ -69,6 +69,7 @@ function DefaultHome() {
             title="You May Also Like"
             products={sections[sections.length - 1].products}
             viewAllHref={`/products?category=${sections[sections.length - 1].slug}`}
+            color={SECTION_COLORS[sections.length % SECTION_COLORS.length]}
           />
         )}
       </div>

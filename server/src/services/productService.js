@@ -105,12 +105,12 @@ async function listProducts({
     conditions.push('p.in_stock = TRUE');
   }
 
-  // ── full-text search ──────────────────────────────────────────────────────
+  // ── search: case-insensitive partial match across name, description, brand, category ──
   if (search && search.trim()) {
     conditions.push(
-      `to_tsvector('english', p.name) @@ plainto_tsquery('english', $${idx})`
+      `(p.name ILIKE $${idx} OR p.description ILIKE $${idx} OR p.brand ILIKE $${idx} OR c.name ILIKE $${idx})`
     );
-    params.push(search.trim());
+    params.push(`%${search.trim()}%`);
     idx++;
   }
 

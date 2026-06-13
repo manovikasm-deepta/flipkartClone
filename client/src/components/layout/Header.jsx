@@ -61,10 +61,6 @@ export default function Header() {
         {/* ── Right nav ────────────────────────────────── */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 20, marginLeft: 'auto', flexShrink: 0 }}>
 
-          <a href="#" style={{ color: '#fff', fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap', fontWeight: 500 }}>
-            Become a Seller
-          </a>
-
           {isAuthenticated ? (
             <div ref={dropRef} style={{ position: 'relative' }}>
               <button
@@ -90,6 +86,10 @@ export default function Header() {
               Login
             </Link>
           )}
+
+          <a href="#" style={{ color: '#fff', fontSize: 14, textDecoration: 'none', whiteSpace: 'nowrap', fontWeight: 500 }}>
+            Become a Seller
+          </a>
 
           <Link to="/cart" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#fff', textDecoration: 'none' }}>
             <span style={{ position: 'relative' }}>

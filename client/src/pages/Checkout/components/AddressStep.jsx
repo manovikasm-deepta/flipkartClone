@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Plus, MapPin, Check, Mail } from 'lucide-react';
+import { Plus, MapPin, Check, Mail, Pencil } from 'lucide-react';
 import { setSelectedAddress, setStep, setConfirmationEmail } from '@/store/slices/checkoutSlice';
 import { addressService } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -16,9 +16,9 @@ export default function AddressStep({ addresses, onAddressesChange }) {
   const confirmationEmail  = useSelector((s) => s.checkout.confirmationEmail);
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [saving, setSaving]     = useState(false);
 
-  // seed the email field once user data is available
   useEffect(() => {
     if (user?.email && !confirmationEmail) {
       dispatch(setConfirmationEmail(user.email));
@@ -27,16 +27,44 @@ export default function AddressStep({ addresses, onAddressesChange }) {
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
+  function openAdd() {
+    setEditingId(null);
+    reset({});
+    setShowForm(true);
+  }
+
+  function openEdit(e, addr) {
+    e.stopPropagation();
+    setEditingId(addr.id);
+    reset({
+      name: addr.name, phone: addr.phone, pincode: addr.pincode,
+      line1: addr.line1, line2: addr.line2 || '', city: addr.city,
+      state: addr.state, type: addr.type,
+    });
+    setShowForm(true);
+  }
+
+  function cancelForm() {
+    setShowForm(false);
+    setEditingId(null);
+    reset({});
+  }
+
   async function saveAddress(data) {
     setSaving(true);
     try {
-      const r = await addressService.addAddress({ ...data, type: data.type || 'HOME' });
-      const newAddr = r.data;
-      onAddressesChange([...addresses, newAddr]);
-      dispatch(setSelectedAddress(newAddr.id));
-      setShowForm(false);
-      reset();
-      toast.success('Address saved');
+      if (editingId) {
+        const r = await addressService.updateAddress(editingId, { ...data, type: data.type || 'HOME' });
+        onAddressesChange(addresses.map((a) => a.id === editingId ? r.data : a));
+        toast.success('Address updated');
+      } else {
+        const r = await addressService.addAddress({ ...data, type: data.type || 'HOME' });
+        const newAddr = r.data;
+        onAddressesChange([...addresses, newAddr]);
+        dispatch(setSelectedAddress(newAddr.id));
+        toast.success('Address saved');
+      }
+      cancelForm();
     } catch (err) {
       toast.error(err.message || 'Failed to save address');
     } finally {
@@ -84,15 +112,25 @@ export default function AddressStep({ addresses, onAddressesChange }) {
                 {addr.phone}
               </div>
             </div>
+            <button
+              onClick={(e) => openEdit(e, addr)}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                padding: 4, color: 'var(--fk-blue)', flexShrink: 0, alignSelf: 'flex-start', marginTop: 2,
+              }}
+              aria-label="Edit address"
+            >
+              <Pencil size={14} />
+            </button>
             {selectedAddressId === addr.id && (
               <Check size={16} style={{ color: 'var(--fk-blue)', flexShrink: 0, alignSelf: 'flex-start', marginTop: 3 }} />
             )}
           </div>
         ))}
 
-        <button className={styles.addAddrBtn} onClick={() => setShowForm((v) => !v)}>
+        <button className={styles.addAddrBtn} onClick={showForm && !editingId ? cancelForm : openAdd}>
           <Plus size={14} />
-          {showForm ? 'Cancel' : 'Add new address'}
+          {showForm && !editingId ? 'Cancel' : 'Add new address'}
         </button>
 
         {showForm && (
@@ -130,11 +168,11 @@ export default function AddressStep({ addresses, onAddressesChange }) {
                 className={styles.continueBtn}
                 style={{ marginTop: 0, flex: 'none', padding: '8px 20px', width: 'auto', fontSize: 13 }}
               >
-                {saving ? 'Saving…' : 'Save Address'}
+                {saving ? 'Saving…' : editingId ? 'Update Address' : 'Save Address'}
               </button>
               <button
                 type="button"
-                onClick={() => { setShowForm(false); reset(); }}
+                onClick={cancelForm}
                 style={{ padding: '8px 16px', border: '1px solid var(--fk-border)', borderRadius: 4, background: '#fff', cursor: 'pointer', fontSize: 13 }}
               >
                 Cancel

@@ -6,7 +6,9 @@
   text-decoration: none;
   color: inherit;
   transition: box-shadow 0.2s ease;
-  border: 1px solid transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
 }
 .card:hover {
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
@@ -17,7 +19,7 @@
 /* ── Image ─────────────────────────────────── */
 .imageWrap {
   position: relative;
-  aspect-ratio: 1 / 1;
+  height: 173px;
   background: #fff;
   overflow: hidden;
   display: flex;
@@ -29,7 +31,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 10px;
+  padding: 8px;
   transition: transform 0.25s ease;
 }
 .card:hover .image {
@@ -59,8 +61,8 @@
   color: #fff;
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 2px 7px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -109,15 +111,14 @@
 
 /* ── Body ──────────────────────────────────── */
 .body {
-  padding: 6px 8px 10px;
+  padding: 8px 10px 10px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  border-top: 1px solid #f5f5f5;
+  gap: 4px;
 }
 
 .name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
   color: #212121;
   line-height: 1.4;
@@ -130,25 +131,27 @@
 
 .priceRow {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
   flex-wrap: wrap;
 }
 
 .sellingPrice {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: #212121;
 }
 
 .mrp {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 400;
   color: #878787;
   text-decoration: line-through;
+  align-self: center;
 }
 
 .discount {
-  font-size: 13px;
+  font-size: 12px;
   color: #388e3c;
   font-weight: 600;
 }

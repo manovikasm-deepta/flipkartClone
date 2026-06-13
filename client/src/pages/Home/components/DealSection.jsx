@@ -1,66 +1,47 @@
 import { Link } from 'react-router-dom';
 import ProductCard from '@/components/common/ProductCard';
 
-export default function DealSection({ title, color = '#2096ff', products = [], slug = '' }) {
+export default function DealSection({ title, color = '#2874f0', products = [], slug = '' }) {
   if (!products.length) return null;
 
-  const isLight = (() => {
-    const c = color.replace('#', '');
-    const r = parseInt(c.substring(0,2), 16);
-    const g = parseInt(c.substring(2,4), 16);
-    const b = parseInt(c.substring(4,6), 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 > 170;
-  })();
-
-  const textColor = isLight ? '#212121' : '#fff';
+  const cardBg     = `${color}22`;   // ~13% opacity tint
+  const cardBorder = `${color}55`;   // ~33% opacity border
 
   return (
-    <div style={{ background: '#fff', borderRadius: 4, boxShadow: 'var(--fk-shadow-sm)', overflow: 'hidden' }}>
+    <div style={{ background: '#fff', borderRadius: 4, border: '1px solid #f0f0f0', overflow: 'hidden' }}>
 
-      {/* Header */}
+      {/* Plain header — no background colour */}
       <div style={{
-        background: color,
         padding: '12px 16px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        minHeight: 54,
+        borderBottom: '1px solid #f0f0f0',
       }}>
-        <h2 style={{ color: textColor, fontWeight: 700, fontSize: 20, margin: 0 }}>
+        <h2 style={{ color: '#212121', fontWeight: 700, fontSize: 20, margin: 0 }}>
           {title}
         </h2>
         <Link
           to={`/products${slug ? `?category=${slug}` : ''}`}
-          style={{
-            color: textColor,
-            fontSize: 18,
-            fontWeight: 700,
-            textDecoration: 'none',
-            width: 32,
-            height: 32,
-            borderRadius: '50%',
-            border: `2px solid ${textColor}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: 0.85,
-          }}
+          style={{ color: '#2874f0', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}
         >
-          →
+          VIEW ALL →
         </Link>
       </div>
 
-      {/* Products row */}
+      {/* Products row — each card gets a light colour tint */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
-        gap: 1,
-        background: '#f0f0f0',
+        gridTemplateColumns: `repeat(${Math.min(products.length, 4)}, 1fr)`,
+        gap: 12,
+        padding: '16px',
       }}>
         {products.slice(0, 5).map((p) => (
-          <div key={p.id} style={{ background: '#fff' }}>
-            <ProductCard product={p} />
-          </div>
+          <ProductCard
+            key={p.id}
+            product={p}
+            cardStyle={{ background: cardBg, border: `1px solid ${cardBorder}` }}
+          />
         ))}
       </div>
     </div>

@@ -24,7 +24,7 @@ export default function LoginPage() {
   async function onSubmit(data) {
     setLoading(true);
     try {
-      const r = await authService.login(data.email, data.password);
+      const r = await authService.login({ email: data.email, password: data.password });
       const { user, token } = r.data;
       dispatch(setCredentials({ user, token }));
       dispatch(fetchCart());
