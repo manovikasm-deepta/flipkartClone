@@ -33,18 +33,20 @@ export default function DealSection({ title, color = '#2096ff', products = [], s
           to={`/products${slug ? `?category=${slug}` : ''}`}
           style={{
             color: textColor,
-            fontSize: 13,
-            fontWeight: 600,
+            fontSize: 18,
+            fontWeight: 700,
             textDecoration: 'none',
-            padding: '6px 14px',
-            background: 'rgba(255,255,255,0.18)',
-            borderRadius: 2,
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            border: `2px solid ${textColor}`,
             display: 'flex',
             alignItems: 'center',
-            gap: 4,
+            justifyContent: 'center',
+            opacity: 0.85,
           }}
         >
-          VIEW ALL →
+          →
         </Link>
       </div>
 
@@ -60,36 +62,6 @@ export default function DealSection({ title, color = '#2096ff', products = [], s
             <ProductCard product={p} />
           </div>
         ))}
-
-        {/* View All card at the end */}
-        <Link
-          to={`/products${slug ? `?category=${slug}` : ''}`}
-          style={{
-            background: color,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            textDecoration: 'none',
-            minHeight: 250,
-          }}
-        >
-          <span style={{ color: textColor, fontSize: 15, fontWeight: 700, textAlign: 'center', lineHeight: 1.4, padding: '0 16px' }}>
-            View All {title.split(' ').slice(-1)[0]}
-          </span>
-          <span style={{
-            color: textColor,
-            fontSize: 24,
-            width: 40, height: 40,
-            borderRadius: '50%',
-            border: `2px solid ${textColor}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: 0.8,
-          }}>›</span>
-        </Link>
       </div>
     </div>
   );
