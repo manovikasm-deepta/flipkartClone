@@ -12,7 +12,7 @@ const RATINGS = [
 export default function FilterSidebar({
   activeCategory,
   activeRating,
-  activeBrand,
+  activeBrands = [],
   minPrice,
   maxPrice,
   brands = [],
@@ -40,7 +40,7 @@ export default function FilterSidebar({
     onPriceChange(localMin, localMax);
   }
 
-  const hasFilters = activeCategory || activeRating || activeBrand || minPrice || maxPrice;
+  const hasFilters = activeCategory || activeRating || activeBrands.length > 0 || minPrice || maxPrice;
   const activeCategoryName = categories.find((c) => c.slug === activeCategory)?.name || activeCategory;
 
   return (
@@ -55,56 +55,23 @@ export default function FilterSidebar({
           )}
         </div>
 
-        {/* ── When a category IS selected: show category label + brand filter ── */}
+        {/* Category section */}
         {activeCategory ? (
-          <>
-            {/* Active category chip */}
-            <div className={styles.filterSection}>
-              <p className={styles.filterSectionTitle}>Category</p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0' }}>
-                <span style={{ fontSize: 13, color: '#2874f0', fontWeight: 600 }}>
-                  {activeCategoryName}
-                </span>
-                <button
-                  onClick={() => onCategoryChange('')}
-                  style={{ fontSize: 11, color: '#878787', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                >
-                  ✕ Change
-                </button>
-              </div>
+          <div className={styles.filterSection}>
+            <p className={styles.filterSectionTitle}>Category</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0' }}>
+              <span style={{ fontSize: 13, color: '#2874f0', fontWeight: 600 }}>
+                {activeCategoryName}
+              </span>
+              <button
+                onClick={() => onCategoryChange('')}
+                style={{ fontSize: 11, color: '#878787', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                ✕ Change
+              </button>
             </div>
-
-            {/* Brand filter — only when brands are available */}
-            {brands.length > 0 && (
-              <div className={styles.filterSection}>
-                <p className={styles.filterSectionTitle}>Brand</p>
-                {activeBrand && (
-                  <button
-                    className={styles.clearBtn}
-                    style={{ marginBottom: 6, display: 'block' }}
-                    onClick={() => onBrandChange('')}
-                  >
-                    Clear brand
-                  </button>
-                )}
-                {brands.map((b) => (
-                  <label key={b} className={styles.checkRow}>
-                    <input
-                      type="checkbox"
-                      className={styles.checkbox}
-                      checked={activeBrand === b}
-                      onChange={() => onBrandChange(activeBrand === b ? '' : b)}
-                    />
-                    <span className={`${styles.checkLabel} ${activeBrand === b ? styles.checkLabelActive : ''}`}>
-                      {b}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            )}
-          </>
+          </div>
         ) : (
-          /* ── When NO category selected: show all categories ── */
           <div className={styles.filterSection}>
             <p className={styles.filterSectionTitle}>Categories</p>
             {categories.map((cat) => (
@@ -117,6 +84,37 @@ export default function FilterSidebar({
                 />
                 <span className={`${styles.checkLabel} ${activeCategory === cat.slug ? styles.checkLabelActive : ''}`}>
                   {cat.name}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
+
+        {/* Brand filter — multi-select, shown when brands are available */}
+        {brands.length > 0 && (
+          <div className={styles.filterSection}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <p className={styles.filterSectionTitle} style={{ margin: 0 }}>Brand</p>
+              {activeBrands.length > 0 && (
+                <button
+                  className={styles.clearBtn}
+                  onClick={() => onBrandChange('')}
+                  style={{ fontSize: 11 }}
+                >
+                  Clear ({activeBrands.length})
+                </button>
+              )}
+            </div>
+            {brands.map((b) => (
+              <label key={b} className={styles.checkRow}>
+                <input
+                  type="checkbox"
+                  className={styles.checkbox}
+                  checked={activeBrands.includes(b)}
+                  onChange={() => onBrandChange(b)}
+                />
+                <span className={`${styles.checkLabel} ${activeBrands.includes(b) ? styles.checkLabelActive : ''}`}>
+                  {b}
                 </span>
               </label>
             ))}

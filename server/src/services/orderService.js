@@ -78,7 +78,7 @@ async function resolveUser(publicId, client) {
 }
 
 // ─── Service functions ────────────────────────────────────────────────────────
-async function placeOrder(userPublicId, addressPublicId, paymentMethod, buyNowItem) {
+async function placeOrder(userPublicId, addressPublicId, paymentMethod, buyNowItem, confirmationEmail) {
   const userId = await resolveUser(userPublicId);
 
   const client = await pool.connect();
@@ -237,8 +237,11 @@ async function placeOrder(userPublicId, addressPublicId, paymentMethod, buyNowIt
     // Send order confirmation email (non-blocking)
     query('SELECT email, name FROM users WHERE id = $1', [userId])
       .then(({ rows }) => {
-        if (rows.length && rows[0].email) {
-          sendOrderConfirmation(rows[0].email, serialized, rows[0].name);
+        if (rows.length) {
+          const toEmail = (confirmationEmail && confirmationEmail.includes('@'))
+            ? confirmationEmail
+            : rows[0].email;
+          if (toEmail) sendOrderConfirmation(toEmail, serialized, rows[0].name);
         }
       })
       .catch(() => {});

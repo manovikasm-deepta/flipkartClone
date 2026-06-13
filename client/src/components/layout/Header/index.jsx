@@ -7,7 +7,7 @@ import { clearCartState } from '@/store/slices/cartSlice';
 import { setWishlistIds } from '@/store/slices/wishlistSlice';
 import {
   Search, ShoppingCart, User, ChevronDown,
-  Package, MapPin, LogOut, UserCircle, Heart, MoreHorizontal,
+  Package, MapPin, LogOut, UserCircle, Heart,
 } from 'lucide-react';
 import styles from './Header.module.css';
 
@@ -72,7 +72,7 @@ export default function Header() {
             </form>
           </div>
 
-          {/* Nav actions */}
+          {/* Nav actions — order: User/Login | More | Cart */}
           <nav className={styles.navActions}>
             {/* Login / Account */}
             {isLoggedIn ? (
@@ -112,31 +112,21 @@ export default function Header() {
               </Link>
             )}
 
-            {/* Become a Seller */}
-            <a href="#" className={styles.navBtn} onClick={(e) => e.preventDefault()}>
-              <span>Become a Seller</span>
-            </a>
-
             {/* More */}
             <div className={styles.dropdownWrap} ref={moreDropRef}>
               <button className={styles.navBtn} onClick={() => setShowMoreDrop((v) => !v)}>
                 <div className={styles.navBtnIcon}>
-                  <MoreHorizontal size={16} />
                   <span>More</span>
                   <ChevronDown size={13} />
                 </div>
               </button>
               {showMoreDrop && (
                 <div className={styles.dropdown} style={{ right: 0 }}>
-                  <Link to="/orders" className={styles.dropdownItem} onClick={() => setShowMoreDrop(false)}>
-                    <Package size={15} /> My Orders
-                  </Link>
-                  <Link to="/wishlist" className={styles.dropdownItem} onClick={() => setShowMoreDrop(false)}>
-                    <Heart size={15} /> Wishlist
-                  </Link>
-                  <div className={styles.dropdownSep} />
                   <a href="#" className={styles.dropdownItem} onClick={(e) => e.preventDefault()}>
-                    <MoreHorizontal size={15} /> Notify Me
+                    Gift Cards
+                  </a>
+                  <a href="#" className={styles.dropdownItem} onClick={(e) => e.preventDefault()}>
+                    Help Centre
                   </a>
                 </div>
               )}

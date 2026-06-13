@@ -3,8 +3,8 @@ const asyncHandler = require('../utils/asyncHandler');
 const { success }  = require('../utils/formatResponse');
 
 const placeOrder = asyncHandler(async (req, res) => {
-  const { addressId, paymentMethod, buyNowItem } = req.body;
-  const order = await orderService.placeOrder(req.user.publicId, addressId, paymentMethod, buyNowItem);
+  const { addressId, paymentMethod, buyNowItem, confirmationEmail } = req.body;
+  const order = await orderService.placeOrder(req.user.publicId, addressId, paymentMethod, buyNowItem, confirmationEmail);
   success(res, order, 201);
 });
 

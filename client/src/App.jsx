@@ -21,6 +21,7 @@ import OrderConfirmationPage from '@/pages/OrderConfirmation/index';
 import OrderHistoryPage     from '@/pages/OrderHistory/index';
 import OrderDetailPage      from '@/pages/OrderDetail';
 import WishlistPage         from '@/pages/Wishlist/index';
+import AddressesPage        from '@/pages/Addresses/index';
 import LoginPage            from '@/pages/Login/index';
 import SignupPage           from '@/pages/Signup/index';
 import NotFoundPage         from '@/pages/NotFound/index';
@@ -86,7 +87,7 @@ const router = createBrowserRouter([
           { path: '/orders',                          element: <OrderHistoryPage /> },
           { path: '/orders/:id',                      element: <OrderDetailPage /> },
           { path: '/wishlist',                        element: <WishlistPage /> },
-          { path: '/addresses',                       element: <WishlistPage /> },
+          { path: '/addresses',                       element: <AddressesPage /> },
         ],
       },
       { path: '/login',  element: <LoginPage /> },

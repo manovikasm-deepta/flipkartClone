@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Plus, MapPin, Check, Mail } from 'lucide-react';
-import { setSelectedAddress, setStep } from '@/store/slices/checkoutSlice';
+import { setSelectedAddress, setStep, setConfirmationEmail } from '@/store/slices/checkoutSlice';
 import { addressService } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
@@ -12,10 +12,18 @@ const ADDRESS_TYPES = ['HOME', 'WORK', 'OTHER'];
 
 export default function AddressStep({ addresses, onAddressesChange }) {
   const dispatch = useDispatch();
-  const selectedAddressId = useSelector((s) => s.checkout.selectedAddressId);
+  const selectedAddressId  = useSelector((s) => s.checkout.selectedAddressId);
+  const confirmationEmail  = useSelector((s) => s.checkout.confirmationEmail);
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving]     = useState(false);
+
+  // seed the email field once user data is available
+  useEffect(() => {
+    if (user?.email && !confirmationEmail) {
+      dispatch(setConfirmationEmail(user.email));
+    }
+  }, [user?.email]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
@@ -135,30 +143,39 @@ export default function AddressStep({ addresses, onAddressesChange }) {
           </form>
         )}
 
-        {/* Email confirmation notice */}
-        {user?.email && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            background: '#e8f5e9',
-            border: '1px solid #c8e6c9',
-            borderRadius: 4,
-            padding: '10px 14px',
-            marginTop: 12,
-            marginBottom: 4,
-          }}>
-            <Mail size={16} style={{ color: '#2e7d32', flexShrink: 0 }} />
-            <div>
-              <span style={{ fontSize: 12, color: '#2e7d32', fontWeight: 600 }}>
-                Order confirmation will be sent to:
-              </span>
-              <span style={{ fontSize: 13, color: '#212121', fontWeight: 700, marginLeft: 6 }}>
-                {user.email}
-              </span>
-            </div>
+        {/* Editable confirmation email */}
+        <div style={{
+          background: '#e8f5e9',
+          border: '1px solid #c8e6c9',
+          borderRadius: 4,
+          padding: '10px 14px',
+          marginTop: 12,
+          marginBottom: 4,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <Mail size={15} style={{ color: '#2e7d32', flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: '#2e7d32', fontWeight: 600 }}>
+              Order confirmation will be sent to:
+            </span>
           </div>
-        )}
+          <input
+            type="email"
+            value={confirmationEmail}
+            onChange={(e) => dispatch(setConfirmationEmail(e.target.value))}
+            placeholder="Enter email for order confirmation"
+            style={{
+              width: '100%',
+              border: '1px solid #c8e6c9',
+              borderRadius: 3,
+              padding: '7px 10px',
+              fontSize: 13,
+              color: '#212121',
+              background: '#fff',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
 
         <button
           className={styles.continueBtn}

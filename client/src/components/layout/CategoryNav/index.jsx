@@ -2,13 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import styles from './CategoryNav.module.css';
 
+const FK_SVG = (name) => `https://static-assets-web.flixcart.com/apex-static/images/svgs/L1Nav/${name}.svg`;
+
 const NAV_ITEMS = [
   {
-    label: 'For You', emoji: '🏠', slug: null,
+    label: 'For You', icon: FK_SVG('home'), slug: null,
     sub: [],
   },
   {
-    label: 'Fashion', emoji: '👗', slug: 'fashion',
+    label: 'Fashion', icon: FK_SVG('fashion'), slug: 'fashion',
     sub: [
       { label: "Men's Clothing", search: "men's clothing" },
       { label: "Women's Clothing", search: "women's clothing" },
@@ -19,7 +21,7 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'Mobiles', emoji: '📱', slug: 'mobiles',
+    label: 'Mobiles', icon: FK_SVG('mobiles'), slug: 'mobiles',
     sub: [
       { label: 'Smartphones', search: 'smartphone' },
       { label: 'Feature Phones', search: 'feature phone' },
@@ -29,7 +31,7 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'Beauty', emoji: '💄', slug: 'beauty',
+    label: 'Beauty', icon: FK_SVG('beauty'), slug: 'beauty',
     sub: [
       { label: 'Skincare', search: 'skincare' },
       { label: 'Haircare', search: 'haircare' },
@@ -39,7 +41,7 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'Electronics', emoji: '💻', slug: 'electronics',
+    label: 'Electronics', icon: FK_SVG('electronics'), slug: 'electronics',
     sub: [
       { label: 'Laptops', search: 'laptop' },
       { label: 'Headphones', search: 'headphone' },
@@ -49,27 +51,17 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'Home', emoji: '🏡', slug: 'home-kitchen',
+    label: 'Home', icon: FK_SVG('home'), slug: 'home-furniture',
     sub: [
       { label: 'Bedding', search: 'bedding' },
       { label: 'Kitchen Tools', search: 'kitchen' },
       { label: 'Decor', search: 'decor' },
-      { label: 'Storage', search: 'storage' },
+      { label: 'Furniture', search: 'furniture' },
       { label: 'Lighting', search: 'lighting' },
     ],
   },
   {
-    label: 'Appliances', emoji: '📺', slug: 'appliances',
-    sub: [
-      { label: 'TVs', search: 'tv' },
-      { label: 'Refrigerators', search: 'refrigerator' },
-      { label: 'Washing Machines', search: 'washing machine' },
-      { label: 'Air Conditioners', search: 'air conditioner' },
-      { label: 'Microwave Ovens', search: 'microwave' },
-    ],
-  },
-  {
-    label: 'Toys, baby..', emoji: '🧸', slug: 'toys',
+    label: 'Toys & Baby', icon: FK_SVG('toy'), slug: 'toys',
     sub: [
       { label: 'Toys', search: 'toy' },
       { label: 'Baby Gear', search: 'baby' },
@@ -78,32 +70,7 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'Food & Health', emoji: '🥗', slug: 'food',
-    sub: [
-      { label: 'Nutrition', search: 'nutrition' },
-      { label: 'Organic Food', search: 'organic' },
-      { label: 'Health Devices', search: 'health' },
-      { label: 'Ayurveda', search: 'ayurveda' },
-    ],
-  },
-  {
-    label: 'Auto Accessories', emoji: '🚗', slug: 'auto',
-    sub: [
-      { label: 'Car Accessories', search: 'car accessories' },
-      { label: 'Bike Accessories', search: 'bike accessories' },
-      { label: 'Car Care', search: 'car care' },
-    ],
-  },
-  {
-    label: '2 Wheelers', emoji: '🏍️', slug: '2-wheelers',
-    sub: [
-      { label: 'Bikes', search: 'bike' },
-      { label: 'Scooters', search: 'scooter' },
-      { label: 'Electric Vehicles', search: 'electric' },
-    ],
-  },
-  {
-    label: 'Sports & Fitness', emoji: '⚽', slug: 'sports',
+    label: 'Sports', icon: FK_SVG('sport'), slug: 'sports',
     sub: [
       { label: 'Exercise Equipment', search: 'exercise' },
       { label: 'Outdoor Sports', search: 'outdoor' },
@@ -112,21 +79,12 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'Books & Media', emoji: '📚', slug: 'books',
+    label: 'Books', icon: FK_SVG('books'), slug: 'books',
     sub: [
       { label: 'Books', search: 'book' },
       { label: 'eBooks', search: 'ebook' },
       { label: 'Music', search: 'music' },
       { label: 'Movies', search: 'movie' },
-    ],
-  },
-  {
-    label: 'Furniture', emoji: '🛋️', slug: 'furniture',
-    sub: [
-      { label: 'Sofas', search: 'sofa' },
-      { label: 'Beds & Mattresses', search: 'bed' },
-      { label: 'Study Tables', search: 'table' },
-      { label: 'Wardrobes', search: 'wardrobe' },
     ],
   },
 ];
@@ -191,7 +149,7 @@ export default function CategoryNav() {
                 className={`${styles.item} ${isActive ? styles.itemActive : ''}`}
               >
                 <div className={`${styles.iconWrap} ${isActive ? styles.iconWrapActive : ''}`}>
-                  <span className={styles.iconEmoji}>{item.emoji}</span>
+                  <img src={item.icon} alt="" className={styles.iconImg} loading="lazy" />
                 </div>
                 <span className={styles.label}>{item.label}</span>
                 {isActive && <span className={styles.activeLine} />}
@@ -209,7 +167,7 @@ export default function CategoryNav() {
           onMouseLeave={handleMouseLeave}
         >
           <div className={styles.megaInner}>
-            <p className={styles.megaTitle}>{hoveredItem.emoji} {hoveredItem.label}</p>
+            <p className={styles.megaTitle}>{hoveredItem.label}</p>
             <div className={styles.megaGrid}>
               {hoveredItem.sub.map((sub) => (
                 <button

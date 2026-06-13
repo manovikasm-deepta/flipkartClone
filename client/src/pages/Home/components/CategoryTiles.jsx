@@ -3,18 +3,14 @@ import { useNavigate } from 'react-router-dom';
 const CDN = 'https://static-assets-web.flixcart.com/apex-static/images/svgs/L1Nav';
 
 const CATEGORIES = [
-  { label: 'Mobiles',          slug: 'mobiles',      icon: 'mobiles' },
-  { label: 'Fashion',          slug: 'fashion',      icon: 'fashion' },
-  { label: 'Electronics',      slug: 'electronics',  icon: 'electronics' },
-  { label: 'Home & Kitchen',   slug: 'home-furniture', icon: 'home-final' },
-  { label: 'Beauty',           slug: 'beauty',       icon: 'beauty' },
-  { label: 'Books',            slug: 'books',        icon: 'books' },
-  { label: 'Sports',           slug: 'sports',       icon: 'sport' },
-  { label: 'Toys & Baby',      slug: 'toys',         icon: 'toy' },
-  { label: 'Appliances',       slug: 'appliances',   icon: 'tv' },
-  { label: 'Food & Health',    slug: 'food',         icon: 'food' },
-  { label: 'Furniture',        slug: 'furniture',    icon: 'furniture' },
-  { label: 'Auto Accessories', slug: 'auto',         icon: 'auto-acc' },
+  { label: 'Mobiles',       slug: 'mobiles',       icon: 'mobiles'      },
+  { label: 'Fashion',       slug: 'fashion',       icon: 'fashion'      },
+  { label: 'Electronics',   slug: 'electronics',   icon: 'electronics'  },
+  { label: 'Home',          slug: 'home-furniture', icon: 'home'        },
+  { label: 'Beauty',        slug: 'beauty',        icon: 'beauty'       },
+  { label: 'Books',         slug: 'books',         icon: 'books'        },
+  { label: 'Sports',        slug: 'sports',        icon: 'sport'        },
+  { label: 'Toys & Baby',   slug: 'toys',          icon: 'toy'          },
 ];
 
 export default function CategoryTiles() {

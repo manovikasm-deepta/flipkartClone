@@ -16,7 +16,7 @@ export default function ProductCard({ product }) {
   const { isAuthenticated } = useAuth();
   const wishlistItems   = useSelector((s) => s.wishlist.items);
   const wishlistEntry   = wishlistItems.find((w) => w.product_id === product.id);
-  const image           = product.images?.[0]?.url ?? `https://picsum.photos/seed/${product.slug}/400/400`;
+  const image           = product.images?.[0]?.url ?? product.thumbnail ?? `https://picsum.photos/seed/${product.slug}/400/400`;
 
   async function handleCartClick(e) {
     e.preventDefault();

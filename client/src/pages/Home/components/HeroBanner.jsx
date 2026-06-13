@@ -18,7 +18,7 @@ const SLIDES = [
     extra: 'Starting ₹1,19,900',
     cta: 'Buy Now',
     href: '/products?category=mobiles',
-    img: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=340&h=280&fit=crop&auto=format',
+    img: 'https://loremflickr.com/340/280/iphone?lock=1',
     gradient: 'linear-gradient(120deg, #fff8e1 0%, #ffe0b2 100%)',
   },
   {
@@ -33,7 +33,7 @@ const SLIDES = [
     extra: 'Top Brands · All Styles',
     cta: 'Explore Fashion',
     href: '/products?category=fashion',
-    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=340&h=280&fit=crop&auto=format',
+    img: 'https://loremflickr.com/340/280/fashion?lock=1',
     gradient: 'linear-gradient(120deg, #fce4ec 0%, #f8bbd0 100%)',
   },
   {
@@ -48,7 +48,7 @@ const SLIDES = [
     extra: 'Noise Cancelling Headphones',
     cta: 'Shop Now',
     href: '/products?category=electronics',
-    img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=340&h=280&fit=crop&auto=format',
+    img: 'https://loremflickr.com/340/280/headphones?lock=1',
     gradient: 'linear-gradient(120deg, #e3f2fd 0%, #bbdefb 100%)',
   },
   {
@@ -63,7 +63,7 @@ const SLIDES = [
     extra: '200MP Camera · S Pen Included',
     cta: 'Buy Now',
     href: '/products?category=mobiles',
-    img: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=340&h=280&fit=crop&auto=format',
+    img: 'https://loremflickr.com/340/280/smartphone?lock=2',
     gradient: 'linear-gradient(120deg, #e8f5e9 0%, #c8e6c9 100%)',
   },
   {
@@ -78,7 +78,7 @@ const SLIDES = [
     extra: 'Atomic Habits · Sapiens & more',
     cta: 'Browse Books',
     href: '/products?category=books',
-    img: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=340&h=280&fit=crop&auto=format',
+    img: 'https://loremflickr.com/340/280/book?lock=1',
     gradient: 'linear-gradient(120deg, #ede7f6 0%, #d1c4e9 100%)',
   },
 ];
@@ -102,6 +102,7 @@ export default function HeroBanner() {
       `}</style>
       <Swiper
         className="hero-swiper"
+        style={{ overflow: 'hidden' }}
         modules={[Autoplay, Pagination, Navigation]}
         autoplay={{ delay: 3500, disableOnInteraction: false }}
         pagination={{ clickable: true }}
@@ -141,6 +142,7 @@ export default function HeroBanner() {
                 width: '100%',
                 maxWidth: 1280,
                 padding: '0 52px',
+                boxSizing: 'border-box',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',

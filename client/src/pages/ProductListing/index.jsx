@@ -14,6 +14,7 @@ export default function ProductListingPage() {
   const [products, setProducts]         = useState([]);
   const [pagination, setPagination]     = useState({});
   const [loading, setLoading]           = useState(true);
+  const [availableBrands, setAvailableBrands] = useState([]);
 
   const category = searchParams.get('category') || '';
   const search   = searchParams.get('search')   || '';
@@ -24,6 +25,10 @@ export default function ProductListingPage() {
   const rating   = searchParams.get('rating')   || '';
   const brand    = searchParams.get('brand')    || '';
 
+  // active brands as array (comma-separated in URL)
+  const activeBrands = brand ? brand.split(',').filter(Boolean) : [];
+
+  // load products (respects all filters including brand)
   const load = useCallback(() => {
     setLoading(true);
     const params = { sort, page, limit: 20 };
@@ -48,6 +53,19 @@ export default function ProductListingPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  // load brand list independently (ignoring brand filter) so list stays stable
+  useEffect(() => {
+    const params = { limit: 200 };
+    if (category) params.category = category;
+    if (search)   params.search   = search;
+    productService.list(params)
+      .then((r) => {
+        const brands = [...new Set((r.data?.items || []).map((p) => p.brand).filter(Boolean))].sort();
+        setAvailableBrands(brands);
+      })
+      .catch(() => {});
+  }, [category, search]);
+
   function setParam(key, value) {
     const next = new URLSearchParams(searchParams);
     if (value) next.set(key, String(value));
@@ -60,6 +78,7 @@ export default function ProductListingPage() {
     const next = new URLSearchParams(searchParams);
     if (slug) next.set('category', slug);
     else next.delete('category');
+    next.delete('brand');
     next.delete('page');
     setSearchParams(next);
   }
@@ -76,8 +95,19 @@ export default function ProductListingPage() {
     setSearchParams(next);
   }
 
+  // toggle a single brand in/out of the comma-separated list; pass '' to clear all
   function handleBrandChange(b) {
-    setParam('brand', b);
+    const next = new URLSearchParams(searchParams);
+    if (!b) {
+      next.delete('brand');
+    } else {
+      const current = next.get('brand') ? next.get('brand').split(',').filter(Boolean) : [];
+      const updated = current.includes(b) ? current.filter((x) => x !== b) : [...current, b];
+      if (updated.length) next.set('brand', updated.join(','));
+      else next.delete('brand');
+    }
+    next.delete('page');
+    setSearchParams(next);
   }
 
   function handleClear() {
@@ -85,9 +115,6 @@ export default function ProductListingPage() {
     if (search) next.set('search', search);
     setSearchParams(next);
   }
-
-  // extract unique non-null brands from current product list
-  const availableBrands = [...new Set(products.map((p) => p.brand).filter(Boolean))].sort();
 
   return (
     <div className={styles.page}>
@@ -107,7 +134,7 @@ export default function ProductListingPage() {
           <FilterSidebar
             activeCategory={category}
             activeRating={rating}
-            activeBrand={brand}
+            activeBrands={activeBrands}
             minPrice={minPrice}
             maxPrice={maxPrice}
             brands={availableBrands}

@@ -19,18 +19,25 @@ const inr = (n) => Number(n || 0).toLocaleString('en-IN', { style: 'currency', c
 export default function PaymentStep({ priceDetails }) {
   const dispatch    = useDispatch();
   const navigate    = useNavigate();
-  const paymentMethod     = useSelector((s) => s.checkout.paymentMethod);
-  const selectedAddressId = useSelector((s) => s.checkout.selectedAddressId);
-  const buyNowItem        = useSelector((s) => s.checkout.buyNowItem);
+  const paymentMethod      = useSelector((s) => s.checkout.paymentMethod);
+  const selectedAddressId  = useSelector((s) => s.checkout.selectedAddressId);
+  const buyNowItem         = useSelector((s) => s.checkout.buyNowItem);
+  const confirmationEmail  = useSelector((s) => s.checkout.confirmationEmail);
   const [placing, setPlacing] = useState(false);
 
   async function handlePlaceOrder() {
     if (!selectedAddressId) { toast.error('No delivery address selected'); return; }
     setPlacing(true);
     try {
-      const payload = { addressId: selectedAddressId, paymentMethod };
+      const payload = { addressId: selectedAddressId, paymentMethod, confirmationEmail };
       if (buyNowItem) {
-        payload.buyNowItem = { productId: buyNowItem.product.id, quantity: buyNowItem.quantity };
+        const productId = buyNowItem?.product?.id;
+        if (!productId) {
+          toast.error('Product details missing. Please go back and try again.');
+          setPlacing(false);
+          return;
+        }
+        payload.buyNowItem = { productId, quantity: buyNowItem.quantity || 1 };
       }
       const r = await orderService.placeOrder(payload);
       const order = r.data;

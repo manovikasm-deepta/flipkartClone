@@ -156,11 +156,19 @@ async function listProducts({
     }
   }
 
-  // ── brand filter ──────────────────────────────────────────────────────────
+  // ── brand filter (comma-separated for multi-select) ──────────────────────
   if (brand && brand.trim()) {
-    conditions.push(`LOWER(p.brand) = LOWER($${idx})`);
-    params.push(brand.trim());
-    idx++;
+    const brandList = brand.split(',').map((b) => b.trim().toLowerCase()).filter(Boolean);
+    if (brandList.length === 1) {
+      conditions.push(`LOWER(p.brand) = $${idx}`);
+      params.push(brandList[0]);
+      idx++;
+    } else if (brandList.length > 1) {
+      const placeholders = brandList.map((_, i) => `$${idx + i}`).join(', ');
+      conditions.push(`LOWER(p.brand) IN (${placeholders})`);
+      params.push(...brandList);
+      idx += brandList.length;
+    }
   }
 
   const WHERE = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -238,6 +246,7 @@ async function getFeaturedSections() {
       return {
         title:    section.title,
         color:    section.color,
+        slug:     section.slugs[0],
         products: res.rows.map(serializeCard),
       };
     })
