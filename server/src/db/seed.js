@@ -19,8 +19,11 @@ const RESET_SQL = `
 `;
 
 async function seed() {
-  const ssl = process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false;
-  const client = new Client({ connectionString: process.env.DATABASE_URL, ssl });
+  const rawUrl = process.env.DATABASE_URL || '';
+  const dbUrl  = rawUrl.replace(/([?&])sslmode=[^&]*/g, (_, sep) => (sep === '?' ? '?' : ''));
+  const isLocal = /localhost|127\.0\.0\.1/.test(rawUrl);
+  const ssl    = isLocal ? false : { rejectUnauthorized: false };
+  const client = new Client({ connectionString: dbUrl, ssl });
 
   try {
     await client.connect();

@@ -6,8 +6,13 @@ const path       = require('path');
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
 
 async function migrate() {
-  const ssl = process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false;
-  const client = new Client({ connectionString: process.env.DATABASE_URL, ssl });
+  // Strip ?sslmode=... from URL so pg doesn't override our explicit ssl option.
+  // pg v8 merges URL sslmode with the ssl option in a way that can nullify rejectUnauthorized.
+  const rawUrl = process.env.DATABASE_URL || '';
+  const dbUrl  = rawUrl.replace(/([?&])sslmode=[^&]*/g, (_, sep) => (sep === '?' ? '?' : ''));
+  const isLocal = /localhost|127\.0\.0\.1/.test(rawUrl);
+  const ssl    = isLocal ? false : { rejectUnauthorized: false };
+  const client = new Client({ connectionString: dbUrl, ssl });
 
   try {
     await client.connect();
