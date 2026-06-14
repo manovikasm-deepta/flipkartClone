@@ -19,7 +19,7 @@ jobs:
   deploy-backend:
     name: Deploy → Vercel (Backend)
     runs-on: ubuntu-latest
-    # No `environment:` field — repository-level secrets are always accessible
+    environment: "Production – flipkart-clone"
     steps:
       - uses: actions/checkout@v4
 
@@ -89,7 +89,7 @@ jobs:
     name: Seed Production DB
     runs-on: ubuntu-latest
     needs: deploy-backend
-    # No `environment:` — uses repository-level DATABASE_URL secret
+    environment: "Production – flipkart-clone"
     steps:
       - uses: actions/checkout@v4
 
@@ -121,7 +121,7 @@ jobs:
     name: Deploy → Vercel (Frontend)
     runs-on: ubuntu-latest
     needs: deploy-backend
-    # No `environment:` — uses repository-level VERCEL_TOKEN secret
+    environment: "Production – flipkart-clone"
     steps:
       - uses: actions/checkout@v4
 
