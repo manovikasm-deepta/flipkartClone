@@ -6,7 +6,8 @@ const path       = require('path');
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
 
 async function migrate() {
-  const client = new Client({ connectionString: process.env.DATABASE_URL });
+  const ssl = process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false;
+  const client = new Client({ connectionString: process.env.DATABASE_URL, ssl });
 
   try {
     await client.connect();
