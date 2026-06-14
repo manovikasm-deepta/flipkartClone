@@ -14,6 +14,8 @@ jobs:
     name: Deploy → Vercel (Backend)
     runs-on: ubuntu-latest
     environment: "Production – flipkart-clone"
+    outputs:
+      backend-url: ${{ steps.deploy-step.outputs.backend-url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -67,6 +69,7 @@ jobs:
           echo "Linked: $(cat .vercel/project.json)"
 
       - name: Deploy server to Vercel
+        id: deploy-step
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
@@ -76,8 +79,19 @@ jobs:
           EXIT=${PIPESTATUS[0]}
           echo "=== Deploy output ==="
           cat /tmp/deploy-out.log
+
+          # Extract the aliased production URL so the frontend can point to it
+          ALIASED=$(grep -oP '(?<=Aliased\s{5})https://\S+' /tmp/deploy-out.log | head -1)
+          if [ -z "$ALIASED" ]; then
+            # Fall back to the production URL if no alias line found
+            ALIASED=$(grep -oP '(?<=Production\s{2})https://\S+' /tmp/deploy-out.log | head -1)
+          fi
+          echo "Backend URL: $ALIASED"
+          echo "backend-url=$ALIASED" >> $GITHUB_OUTPUT
+
           echo "## Backend Deploy" >> $GITHUB_STEP_SUMMARY
           echo "Exit code: $EXIT" >> $GITHUB_STEP_SUMMARY
+          echo "Backend URL: $ALIASED" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat /tmp/deploy-out.log >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -128,9 +142,9 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      # The frontend project serves both the SPA and the Express API (monorepo via
-      # root vercel.json). Push the same backend env vars here so the API on the
-      # frontend domain works correctly (buy now, email, auth all need these).
+      # The frontend Vercel project uses client/vercel.json (pure SPA — no API
+      # routes). Push VITE_API_URL so the Vite build calls the backend project,
+      # and push GMAIL vars for any server-side functions that may run.
       - name: Configure frontend environment variables
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
@@ -138,6 +152,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
           DATABASE_URL:      ${{ secrets.DATABASE_URL }}
           JWT_SECRET:        ${{ secrets.JWT_SECRET }}
+          BACKEND_URL:       ${{ needs.deploy-backend.outputs.backend-url }}
         run: |
           push_env() {
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
@@ -148,15 +163,14 @@ jobs:
             echo "  push_env $1 → HTTP $STATUS"
           }
 
-          push_env "NODE_ENV"     "production"
-          push_env "GMAIL_USER"   "mukkerlamanovikas@gmail.com"
-          push_env "GMAIL_PASS"   "xhihqvmjbxcdwcga"
-          push_env "DATABASE_URL" "$DATABASE_URL"
-          push_env "JWT_SECRET"   "$JWT_SECRET"
-          push_env "CORS_ORIGINS" "https://flipkart-clone-beta-two.vercel.app"
+          echo "Backend URL for VITE_API_URL: $BACKEND_URL"
+          if [ -n "$BACKEND_URL" ]; then
+            push_env "VITE_API_URL" "${BACKEND_URL}/api"
+          else
+            echo "WARNING: BACKEND_URL is empty — VITE_API_URL not pushed"
+          fi
 
-      # Link to the frontend Vercel project from repo root so the root vercel.json
-      # (which has the correct buildCommand) is used instead of client/vercel.json
+      # Link to the frontend Vercel project
       - name: Link frontend to Vercel project
         env:
           VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
