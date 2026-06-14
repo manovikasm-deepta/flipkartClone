@@ -54,9 +54,9 @@ jobs:
           push_env "JWT_SECRET"   "$JWT_SECRET"
           push_env "CORS_ORIGINS" "https://flipkart-clone-beta-two.vercel.app"
 
-      # Link to the server Vercel project using secrets (not hardcoded IDs)
+      # Link to the server Vercel project — run from REPO ROOT so Vercel resolves
+      # the project's "Root Directory = server" setting correctly (not server/server)
       - name: Link server to Vercel project
-        working-directory: server
         env:
           VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
@@ -67,7 +67,6 @@ jobs:
           echo "Linked: $(cat .vercel/project.json)"
 
       - name: Deploy server to Vercel
-        working-directory: server
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
