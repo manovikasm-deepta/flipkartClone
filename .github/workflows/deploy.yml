@@ -142,9 +142,9 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      # The frontend Vercel project uses client/vercel.json (pure SPA — no API
-      # routes). Push VITE_API_URL so the Vite build calls the backend project,
-      # and push GMAIL vars for any server-side functions that may run.
+      # Push all runtime + build-time env vars to the CLIENT Vercel project so:
+      # • The monorepo Express API (api/index.js) has DATABASE_URL, JWT_SECRET, GMAIL
+      # • GitHub-integration builds pick up VITE_API_URL for the next triggered build
       - name: Configure frontend environment variables
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
@@ -163,26 +163,47 @@ jobs:
             echo "  push_env $1 → HTTP $STATUS"
           }
 
-          echo "Backend URL for VITE_API_URL: $BACKEND_URL"
-          if [ -n "$BACKEND_URL" ]; then
-            push_env "VITE_API_URL" "${BACKEND_URL}/api"
-          else
-            echo "WARNING: BACKEND_URL is empty — VITE_API_URL not pushed"
-          fi
+          # Runtime vars (used by the Express API at request-time)
+          push_env "NODE_ENV"     "production"
+          push_env "DATABASE_URL" "$DATABASE_URL"
+          push_env "JWT_SECRET"   "$JWT_SECRET"
+          push_env "GMAIL_USER"   "mukkerlamanovikas@gmail.com"
+          push_env "GMAIL_PASS"   "xhihqvmjbxcdwcga"
+          push_env "CORS_ORIGINS" "https://flipkart-clone-beta-two.vercel.app"
 
-      # Link to the frontend Vercel project
-      - name: Link frontend to Vercel project
-        env:
-          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
-        run: |
-          mkdir -p .vercel
-          echo "{\"orgId\":\"$VERCEL_ORG_ID\",\"projectId\":\"$VERCEL_PROJECT_ID\"}" \
-            > .vercel/project.json
+          # Build-time var: backend URL for Vite to bake into the bundle
+          API_BASE="${BACKEND_URL:-https://flipkart-clone-api-delta.vercel.app}"
+          push_env "VITE_API_URL" "${API_BASE}/api"
+          echo "VITE_API_URL set to ${API_BASE}/api"
 
-      - name: Deploy frontend to Vercel
+      # Pull the Vercel project settings + the env vars we just pushed above
+      # into client/.vercel so vercel build can use them in the Vite build step.
+      - name: Pull Vercel project settings
+        working-directory: client
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
-        run: vercel deploy --prod --yes --token="$VERCEL_TOKEN"
+        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      # Build the Vite SPA locally.  Pass VITE_API_URL explicitly as a process
+      # env var so it overrides any stale value that may have been pulled.
+      - name: Build frontend
+        working-directory: client
+        env:
+          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
+          BACKEND_URL:       ${{ needs.deploy-backend.outputs.backend-url }}
+        run: |
+          API_BASE="${BACKEND_URL:-https://flipkart-clone-api-delta.vercel.app}"
+          VITE_API_URL="${API_BASE}/api" vercel build --prod --token="$VERCEL_TOKEN"
+
+      # Upload the pre-built artifacts — no remote build, so no cache issues.
+      - name: Deploy to production
+        working-directory: client
+        env:
+          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
+        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
