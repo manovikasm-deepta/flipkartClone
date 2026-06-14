@@ -9,7 +9,9 @@ async function migrate() {
   // Strip ?sslmode=... from URL so pg doesn't override our explicit ssl option.
   // pg v8 merges URL sslmode with the ssl option in a way that can nullify rejectUnauthorized.
   const rawUrl = process.env.DATABASE_URL || '';
-  const dbUrl  = rawUrl.replace(/([?&])sslmode=[^&]*/g, (_, sep) => (sep === '?' ? '?' : ''));
+  // Strip sslmode and channel_binding — we set ssl explicitly below
+  const dbUrl  = rawUrl.replace(/([?&])(sslmode|channel_binding)=[^&]*/g,
+                   (_, sep) => (sep === '?' ? '?' : ''));
   const isLocal = /localhost|127\.0\.0\.1/.test(rawUrl);
   const ssl    = isLocal ? false : { rejectUnauthorized: false };
   const client = new Client({ connectionString: dbUrl, ssl });
