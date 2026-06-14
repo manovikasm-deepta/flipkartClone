@@ -59,7 +59,8 @@ async function migrate() {
     console.log(`[migrate] Done. ${ran} migration(s) applied.`);
     process.exit(0);
   } catch (err) {
-    console.error('[migrate] Error:', err.message);
+    console.error('[migrate] Error:', err.message || err.code || String(err));
+    console.error('[migrate] Stack:', err.stack);
     process.exit(1);
   } finally {
     await client.end();
