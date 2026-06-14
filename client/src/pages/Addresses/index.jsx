@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 const BLUE   = '#2874f0';
 const TEXT   = '#212121';
 const BORDER = '#e0e0e0';
-const BG     = '#f1f3f6';
+const BG     = '#ffffff';
 
 // ─── Blank form state ─────────────────────────────────────────────────────────
 const BLANK = { name: '', phone: '', line1: '', line2: '', city: '', state: '', pincode: '', type: 'HOME' };
