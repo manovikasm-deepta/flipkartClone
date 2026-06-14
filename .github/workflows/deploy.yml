@@ -48,21 +48,28 @@ jobs:
           push_env "DATABASE_URL" "${{ secrets.DATABASE_URL }}"
           push_env "JWT_SECRET"   "${{ secrets.JWT_SECRET }}"
 
+      # Create .vercel/project.json so the CLI knows which org+project to use
+      # This is the most reliable approach — CLI reads this file before any env var
+      - name: Link server to Vercel project
+        working-directory: server
+        run: |
+          mkdir -p .vercel
+          echo '{"orgId":"team_6bXzC8B815868CQWqvcagAmz","projectId":"prj_hJGAKSsGkYQC0Xv18keD0D1Ztz5s"}' \
+            > .vercel/project.json
+          echo "Linked: $(cat .vercel/project.json)"
+
       - name: Deploy server to Vercel
         working-directory: server
         run: |
-          OUTPUT=$(vercel deploy --prod --yes \
-            --scope=team_6bXzC8B815868CQWqvcagAmz \
-            --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
+          OUTPUT=$(vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
           EXIT=$?
           echo "$OUTPUT"
           echo "## Backend Deploy" >> $GITHUB_STEP_SUMMARY
+          echo "Exit: $EXIT" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "$OUTPUT" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           exit $EXIT
-        env:
-          VERCEL_PROJECT_ID: ${{ env.VERCEL_SERVER_ID }}
 
   # ── Seed production database ─────────────────────────────────────────────────
   seed-db:
