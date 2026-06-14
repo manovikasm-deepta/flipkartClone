@@ -128,6 +128,33 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
+      # The frontend project serves both the SPA and the Express API (monorepo via
+      # root vercel.json). Push the same backend env vars here so the API on the
+      # frontend domain works correctly (buy now, email, auth all need these).
+      - name: Configure frontend environment variables
+        env:
+          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
+          DATABASE_URL:      ${{ secrets.DATABASE_URL }}
+          JWT_SECRET:        ${{ secrets.JWT_SECRET }}
+        run: |
+          push_env() {
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X POST "https://api.vercel.com/v10/projects/$VERCEL_PROJECT_ID/env?upsert=true&teamId=$VERCEL_ORG_ID" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"key\":\"$1\",\"value\":\"$2\",\"type\":\"encrypted\",\"target\":[\"production\"]}")
+            echo "  push_env $1 → HTTP $STATUS"
+          }
+
+          push_env "NODE_ENV"     "production"
+          push_env "GMAIL_USER"   "mukkerlamanovikas@gmail.com"
+          push_env "GMAIL_PASS"   "xhihqvmjbxcdwcga"
+          push_env "DATABASE_URL" "$DATABASE_URL"
+          push_env "JWT_SECRET"   "$JWT_SECRET"
+          push_env "CORS_ORIGINS" "https://flipkart-clone-beta-two.vercel.app"
+
       # Link to the frontend Vercel project from repo root so the root vercel.json
       # (which has the correct buildCommand) is used instead of client/vercel.json
       - name: Link frontend to Vercel project

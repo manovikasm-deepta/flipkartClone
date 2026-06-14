@@ -22,10 +22,15 @@ export default function PaymentStep({ priceDetails }) {
   const navigate    = useNavigate();
   const paymentMethod      = useSelector((s) => s.checkout.paymentMethod);
   const selectedAddressId  = useSelector((s) => s.checkout.selectedAddressId);
-  const buyNowItem         = useSelector((s) => s.checkout.buyNowItem);
+  const reduxBuyNow        = useSelector((s) => s.checkout.buyNowItem);
   const confirmationEmail  = useSelector((s) => s.checkout.confirmationEmail);
   const cartItems          = useSelector((s) => s.cart.items);
   const [placing, setPlacing] = useState(false);
+
+  // Defensive: if Redux was reset after a hard reload, fall back to sessionStorage directly
+  const buyNowItem = reduxBuyNow || (() => {
+    try { return JSON.parse(sessionStorage.getItem('fk_buy_now')); } catch { return null; }
+  })();
 
   async function handlePlaceOrder() {
     if (!selectedAddressId) { toast.error('No delivery address selected'); return; }
