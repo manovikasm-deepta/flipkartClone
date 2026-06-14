@@ -19,7 +19,7 @@ jobs:
   deploy-backend:
     name: Deploy → Vercel (Backend)
     runs-on: ubuntu-latest
-    environment: Production - flipkart-clone
+    # No `environment:` field — repository-level secrets are always accessible
     steps:
       - uses: actions/checkout@v4
 
@@ -28,10 +28,21 @@ jobs:
 
       # Push runtime secrets into the SERVER Vercel project
       - name: Configure server environment variables
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
-          TOKEN="${{ secrets.VERCEL_TOKEN }}"
+          TOKEN="$VERCEL_TOKEN"
           PROJECT="${{ env.VERCEL_SERVER_ID }}"
           TEAM="${{ env.VERCEL_ORG_ID }}"
+
+          echo "Token length: ${#TOKEN}"
+          if [ -z "$TOKEN" ]; then
+            echo "FATAL: VERCEL_TOKEN secret is not set. Add it as a repository secret at:"
+            echo "  GitHub → Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
 
           push_env() {
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
@@ -42,14 +53,14 @@ jobs:
             echo "  push_env $1 → HTTP $STATUS"
           }
 
-          push_env "NODE_ENV"     "production"
-          push_env "GMAIL_USER"   "mukkerlamanovikas@gmail.com"
-          push_env "GMAIL_PASS"   "xhihqvmjbxcdwcga"
-          push_env "DATABASE_URL" "${{ secrets.DATABASE_URL }}"
-          push_env "JWT_SECRET"   "${{ secrets.JWT_SECRET }}"
+          push_env "NODE_ENV"      "production"
+          push_env "GMAIL_USER"    "mukkerlamanovikas@gmail.com"
+          push_env "GMAIL_PASS"    "xhihqvmjbxcdwcga"
+          push_env "DATABASE_URL"  "$DATABASE_URL"
+          push_env "JWT_SECRET"    "$JWT_SECRET"
+          push_env "CORS_ORIGINS"  "https://flipkart-clone-beta-two.vercel.app"
 
       # Create .vercel/project.json so the CLI knows which org+project to use
-      # This is the most reliable approach — CLI reads this file before any env var
       - name: Link server to Vercel project
         working-directory: server
         run: |
@@ -60,14 +71,16 @@ jobs:
 
       - name: Deploy server to Vercel
         working-directory: server
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          OUTPUT=$(vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
-          EXIT=$?
-          echo "$OUTPUT"
+          vercel deploy --prod --yes --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/deploy-out.log
+          EXIT=${PIPESTATUS[0]}
+          cat /tmp/deploy-out.log
           echo "## Backend Deploy" >> $GITHUB_STEP_SUMMARY
           echo "Exit: $EXIT" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "$OUTPUT" >> $GITHUB_STEP_SUMMARY
+          cat /tmp/deploy-out.log >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           exit $EXIT
 
@@ -76,7 +89,7 @@ jobs:
     name: Seed Production DB
     runs-on: ubuntu-latest
     needs: deploy-backend
-    environment: Production - flipkart-clone
+    # No `environment:` — uses repository-level DATABASE_URL secret
     steps:
       - uses: actions/checkout@v4
 
@@ -108,7 +121,7 @@ jobs:
     name: Deploy → Vercel (Frontend)
     runs-on: ubuntu-latest
     needs: deploy-backend
-    environment: Production - flipkart-clone
+    # No `environment:` — uses repository-level VERCEL_TOKEN secret
     steps:
       - uses: actions/checkout@v4
 
@@ -117,21 +130,24 @@ jobs:
 
       - name: Pull Vercel project settings
         working-directory: client
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
+          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID:     ${{ env.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.VERCEL_CLIENT_ID }}
+        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
 
       - name: Build project artifacts
         working-directory: client
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
+          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID:     ${{ env.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.VERCEL_CLIENT_ID }}
+        run: vercel build --prod --token="$VERCEL_TOKEN"
 
       - name: Deploy to production
         working-directory: client
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
+          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID:     ${{ env.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.VERCEL_CLIENT_ID }}
+        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
