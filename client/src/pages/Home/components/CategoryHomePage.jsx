@@ -117,7 +117,7 @@ export default function CategoryHomePage({ category }) {
   const brandSectionIdx = sections.indexOf('Top Brands');
 
   return (
-    <div style={{ background: '#f1f3f6', minHeight: '100vh' }}>
+    <div style={{ background: '#fff', minHeight: '100vh' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '12px 12px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         {loading ? (
           <div style={{ background: '#fff', padding: 16, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8, borderRadius: 4 }}>
