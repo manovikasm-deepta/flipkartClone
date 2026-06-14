@@ -1,4 +1,4 @@
-CREATE TABLE cart_items (
+CREATE TABLE IF NOT EXISTS cart_items (
   id          BIGSERIAL    PRIMARY KEY,
   public_id   UUID         NOT NULL DEFAULT gen_random_uuid() UNIQUE,
   user_id     BIGINT       NOT NULL REFERENCES users(id) ON DELETE CASCADE,

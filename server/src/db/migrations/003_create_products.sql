@@ -1,4 +1,4 @@
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
   id             BIGSERIAL      PRIMARY KEY,
   public_id      UUID           NOT NULL DEFAULT gen_random_uuid() UNIQUE,
   category_id    BIGINT         NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,

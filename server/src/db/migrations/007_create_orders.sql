@@ -1,4 +1,4 @@
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
   id               BIGSERIAL      PRIMARY KEY,
   public_id        UUID           NOT NULL DEFAULT gen_random_uuid() UNIQUE,
   order_number     VARCHAR(20)    NOT NULL UNIQUE,

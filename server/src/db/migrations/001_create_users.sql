@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id            BIGSERIAL    PRIMARY KEY,
   public_id     UUID         NOT NULL DEFAULT gen_random_uuid() UNIQUE,
   name          VARCHAR(100) NOT NULL,

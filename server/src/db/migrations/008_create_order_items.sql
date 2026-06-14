@@ -1,4 +1,4 @@
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
   id             BIGSERIAL      PRIMARY KEY,
   public_id      UUID           NOT NULL DEFAULT gen_random_uuid() UNIQUE,
   order_id       BIGINT         NOT NULL REFERENCES orders(id) ON DELETE CASCADE,

@@ -1,4 +1,4 @@
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
   id         BIGSERIAL    PRIMARY KEY,
   public_id  UUID         NOT NULL DEFAULT gen_random_uuid() UNIQUE,
   name       VARCHAR(100) NOT NULL UNIQUE,

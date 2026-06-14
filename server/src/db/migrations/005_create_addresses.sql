@@ -1,4 +1,4 @@
-CREATE TABLE addresses (
+CREATE TABLE IF NOT EXISTS addresses (
   id          BIGSERIAL    PRIMARY KEY,
   public_id   UUID         NOT NULL DEFAULT gen_random_uuid() UNIQUE,
   user_id     BIGINT       NOT NULL REFERENCES users(id) ON DELETE CASCADE,
