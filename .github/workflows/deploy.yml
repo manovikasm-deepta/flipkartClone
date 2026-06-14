@@ -139,19 +139,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      # Push all runtime + build-time env vars to the CLIENT Vercel project so:
-      # • The monorepo Express API (api/index.js) has DATABASE_URL, JWT_SECRET, GMAIL
-      # • GitHub-integration builds pick up VITE_API_URL for the next triggered build
+      # Push VITE_API_URL to the CLIENT Vercel project so GitHub-integration
+      # builds (which run outside CI) also get the correct backend URL.
       - name: Configure frontend environment variables
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
-          DATABASE_URL:      ${{ secrets.DATABASE_URL }}
-          JWT_SECRET:        ${{ secrets.JWT_SECRET }}
           BACKEND_URL:       ${{ needs.deploy-backend.outputs.backend-url }}
         run: |
           push_env() {
@@ -162,44 +165,62 @@ jobs:
               -d "{\"key\":\"$1\",\"value\":\"$2\",\"type\":\"encrypted\",\"target\":[\"production\"]}")
             echo "  push_env $1 → HTTP $STATUS"
           }
-
-          # Runtime vars (used by the Express API at request-time)
-          push_env "NODE_ENV"     "production"
-          push_env "DATABASE_URL" "$DATABASE_URL"
-          push_env "JWT_SECRET"   "$JWT_SECRET"
-          push_env "GMAIL_USER"   "mukkerlamanovikas@gmail.com"
-          push_env "GMAIL_PASS"   "xhihqvmjbxcdwcga"
-          push_env "CORS_ORIGINS" "https://flipkart-clone-beta-two.vercel.app"
-
-          # Build-time var: backend URL for Vite to bake into the bundle
           API_BASE="${BACKEND_URL:-https://flipkart-clone-api-delta.vercel.app}"
           push_env "VITE_API_URL" "${API_BASE}/api"
-          echo "VITE_API_URL set to ${API_BASE}/api"
+          echo "VITE_API_URL = ${API_BASE}/api"
 
-      # Pull the Vercel project settings + the env vars we just pushed above
-      # into client/.vercel so vercel build can use them in the Vite build step.
-      - name: Pull Vercel project settings
+      # Install client deps directly with npm — no vercel build involved.
+      # Avoids the "spawn sh ENOENT" regression in Vercel CLI 54.14+.
+      - name: Install client dependencies
         working-directory: client
-        env:
-          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
-        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+        run: npm ci
 
-      # Build the Vite SPA locally.  Pass VITE_API_URL explicitly as a process
-      # env var so it overrides any stale value that may have been pulled.
+      # Build the SPA with VITE_API_URL baked into the bundle.
       - name: Build frontend
         working-directory: client
         env:
-          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
-          BACKEND_URL:       ${{ needs.deploy-backend.outputs.backend-url }}
+          BACKEND_URL: ${{ needs.deploy-backend.outputs.backend-url }}
         run: |
           API_BASE="${BACKEND_URL:-https://flipkart-clone-api-delta.vercel.app}"
-          VITE_API_URL="${API_BASE}/api" vercel build --prod --token="$VERCEL_TOKEN"
+          VITE_API_URL="${API_BASE}/api" npm run build
 
-      # Upload the pre-built artifacts — no remote build, so no cache issues.
+      # Assemble the Vercel Build Output API v3 structure so we can deploy
+      # with --prebuilt and skip any remote build entirely.
+      - name: Create Vercel output structure
+        run: |
+          mkdir -p client/.vercel/output/static
+          cp -rT client/dist client/.vercel/output/static
+          cat > client/.vercel/output/config.json << 'VERCEL_CONFIG'
+          {
+            "version": 3,
+            "routes": [
+              {
+                "src": "/assets/(.*)",
+                "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
+              },
+              {
+                "src": "/(.*)",
+                "headers": {
+                  "X-Content-Type-Options": "nosniff",
+                  "X-Frame-Options": "DENY"
+                }
+              },
+              { "handle": "filesystem" },
+              { "src": "/(.*)", "dest": "/index.html" }
+            ]
+          }
+          VERCEL_CONFIG
+
+      # Write project.json so the CLI knows which Vercel project to deploy to.
+      - name: Link frontend to Vercel project
+        env:
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
+        run: |
+          echo "{\"orgId\":\"$VERCEL_ORG_ID\",\"projectId\":\"$VERCEL_PROJECT_ID\"}" \
+            > client/.vercel/project.json
+
+      # Upload pre-built artifacts — no remote build, no cache issues.
       - name: Deploy to production
         working-directory: client
         env:
