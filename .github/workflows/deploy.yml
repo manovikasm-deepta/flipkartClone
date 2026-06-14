@@ -8,12 +8,6 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
-# These IDs are from README.md — not secrets, just project identifiers
-env:
-  VERCEL_ORG_ID:      team_6bXzC8B815868CQWqvcagAmz
-  VERCEL_SERVER_ID:   prj_hJGAKSsGkYQC0Xv18keD0D1Ztz5s
-  VERCEL_CLIENT_ID:   prj_KSow1Ja17JfcMAmu0CE7p1NB9nTv
-
 jobs:
   # ── Deploy backend (Express API) ─────────────────────────────────────────────
   deploy-backend:
@@ -26,59 +20,65 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      # Push runtime secrets into the SERVER Vercel project
+      # Push runtime secrets into the SERVER Vercel project via REST API
       - name: Configure server environment variables
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
+          DATABASE_URL:      ${{ secrets.DATABASE_URL }}
+          JWT_SECRET:        ${{ secrets.JWT_SECRET }}
         run: |
-          TOKEN="$VERCEL_TOKEN"
-          PROJECT="${{ env.VERCEL_SERVER_ID }}"
-          TEAM="${{ env.VERCEL_ORG_ID }}"
+          echo "Token length: ${#VERCEL_TOKEN}"
+          echo "Org ID: $VERCEL_ORG_ID"
+          echo "Project ID: $VERCEL_PROJECT_ID"
 
-          echo "Token length: ${#TOKEN}"
-          if [ -z "$TOKEN" ]; then
-            echo "FATAL: VERCEL_TOKEN secret is not set. Add it as a repository secret at:"
-            echo "  GitHub → Settings → Secrets and variables → Actions → New repository secret"
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "FATAL: VERCEL_TOKEN is empty"
             exit 1
           fi
 
           push_env() {
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              -X POST "https://api.vercel.com/v10/projects/$PROJECT/env?upsert=true&teamId=$TEAM" \
-              -H "Authorization: Bearer $TOKEN" \
+              -X POST "https://api.vercel.com/v10/projects/$VERCEL_PROJECT_ID/env?upsert=true&teamId=$VERCEL_ORG_ID" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
               -H "Content-Type: application/json" \
               -d "{\"key\":\"$1\",\"value\":\"$2\",\"type\":\"encrypted\",\"target\":[\"production\"]}")
             echo "  push_env $1 → HTTP $STATUS"
           }
 
-          push_env "NODE_ENV"      "production"
-          push_env "GMAIL_USER"    "mukkerlamanovikas@gmail.com"
-          push_env "GMAIL_PASS"    "xhihqvmjbxcdwcga"
-          push_env "DATABASE_URL"  "$DATABASE_URL"
-          push_env "JWT_SECRET"    "$JWT_SECRET"
-          push_env "CORS_ORIGINS"  "https://flipkart-clone-beta-two.vercel.app"
+          push_env "NODE_ENV"     "production"
+          push_env "GMAIL_USER"   "mukkerlamanovikas@gmail.com"
+          push_env "GMAIL_PASS"   "xhihqvmjbxcdwcga"
+          push_env "DATABASE_URL" "$DATABASE_URL"
+          push_env "JWT_SECRET"   "$JWT_SECRET"
+          push_env "CORS_ORIGINS" "https://flipkart-clone-beta-two.vercel.app"
 
-      # Create .vercel/project.json so the CLI knows which org+project to use
+      # Link to the server Vercel project using secrets (not hardcoded IDs)
       - name: Link server to Vercel project
         working-directory: server
+        env:
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
         run: |
           mkdir -p .vercel
-          echo '{"orgId":"team_6bXzC8B815868CQWqvcagAmz","projectId":"prj_hJGAKSsGkYQC0Xv18keD0D1Ztz5s"}' \
+          echo "{\"orgId\":\"$VERCEL_ORG_ID\",\"projectId\":\"$VERCEL_PROJECT_ID\"}" \
             > .vercel/project.json
           echo "Linked: $(cat .vercel/project.json)"
 
       - name: Deploy server to Vercel
         working-directory: server
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
         run: |
           vercel deploy --prod --yes --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/deploy-out.log
           EXIT=${PIPESTATUS[0]}
+          echo "=== Deploy output ==="
           cat /tmp/deploy-out.log
           echo "## Backend Deploy" >> $GITHUB_STEP_SUMMARY
-          echo "Exit: $EXIT" >> $GITHUB_STEP_SUMMARY
+          echo "Exit code: $EXIT" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat /tmp/deploy-out.log >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -132,22 +132,22 @@ jobs:
         working-directory: client
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID:     ${{ env.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ env.VERCEL_CLIENT_ID }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
         run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
 
       - name: Build project artifacts
         working-directory: client
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID:     ${{ env.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ env.VERCEL_CLIENT_ID }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
         run: vercel build --prod --token="$VERCEL_TOKEN"
 
       - name: Deploy to production
         working-directory: client
         env:
           VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID:     ${{ env.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ env.VERCEL_CLIENT_ID }}
+          VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
         run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
